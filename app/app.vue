@@ -11,6 +11,14 @@
 const { locale, locales } = useI18n();
 const rootEl = ref<HTMLElement | null>(null);
 
+// Inject hreflang alternate links and og:locale automatically per page
+const localeHead = useLocaleHead({ dir: true, lang: true, seo: true });
+useHead(() => ({
+    htmlAttrs: localeHead.value.htmlAttrs ?? {},
+    link: localeHead.value.link ?? [],
+    meta: localeHead.value.meta ?? [],
+}));
+
 // Set initial direction after mount to avoid hydration mismatch
 onMounted(() => {
     updateDirection();

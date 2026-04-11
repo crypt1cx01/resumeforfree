@@ -165,6 +165,7 @@ useHead({
     title: `${t('auth.resetPassword')} - Resume Builder`,
     meta: [
         { name: 'description', content: t('auth.resetPasswordDescription') },
+        { name: 'robots', content: 'noindex, follow' },
     ],
 });
 </script>

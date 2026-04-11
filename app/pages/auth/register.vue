@@ -170,6 +170,7 @@ useHead({
     title: `${t('auth.createAccount')} - Resume Builder`,
     meta: [
         { name: 'description', content: t('auth.createAccountDescription') },
+        { name: 'robots', content: 'noindex, follow' },
     ],
 });
 </script>

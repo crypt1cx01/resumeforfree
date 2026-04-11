@@ -12,6 +12,8 @@ export default defineNuxtConfig({
         '@nuxtjs/i18n',
         'nitro-cloudflare-dev',
         '@nuxtjs/turnstile',
+        '@nuxtjs/sitemap',
+        '@nuxtjs/robots',
     ],
 
     imports: {
@@ -23,7 +25,6 @@ export default defineNuxtConfig({
         head: {
             link: [
                 { rel: 'icon', type: 'image/svg+xml', href: '/favicon.svg' },
-                { rel: 'canonical', href: 'https://resumeforfree.com' },
             ],
             meta: [
                 { charset: 'utf-8' },
@@ -104,20 +105,21 @@ export default defineNuxtConfig({
                 code: 'en',
                 name: 'English',
                 file: 'en.json',
-                iso: 'en-US',
+                language: 'en-US',
                 dir: 'ltr',
             },
             {
                 code: 'ar',
                 name: 'العربية',
                 file: 'ar.json',
-                iso: 'ar-SA',
+                language: 'ar-SA',
                 dir: 'rtl',
             },
         ],
         lazy: true,
         langDir: 'locales',
-        strategy: 'no_prefix',
+        strategy: 'prefix_except_default',
+        baseUrl: 'https://resumeforfree.com',
         detectBrowserLanguage: {
             useCookie: true,
             cookieKey: 'i18n_redirected',
@@ -155,6 +157,11 @@ export default defineNuxtConfig({
         },
     },
 
+    robots: {
+        disallow: ['/auth/', '/admin/', '/profile'],
+        allow: '/',
+    },
+
     seo: {
         redirectToCanonicalSiteUrl: true,
     },
@@ -162,5 +169,25 @@ export default defineNuxtConfig({
     shadcn: {
         prefix: '',
         componentDir: './app/components/ui',
+    },
+
+    sitemap: {
+        exclude: [
+            '/auth/**',
+            '/admin/**',
+            '/profile',
+        ],
+        defaults: {
+            changefreq: 'weekly',
+            priority: 0.7,
+        },
+        urls: [
+            { loc: '/', priority: 1.0, changefreq: 'weekly' },
+            { loc: '/resumes', priority: 0.9, changefreq: 'monthly' },
+            { loc: '/builder', priority: 0.8, changefreq: 'monthly' },
+            { loc: '/qa', priority: 0.7, changefreq: 'monthly' },
+            { loc: '/contact', priority: 0.5, changefreq: 'yearly' },
+            { loc: '/terms', priority: 0.3, changefreq: 'yearly' },
+        ],
     },
 });
