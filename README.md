@@ -56,13 +56,6 @@ npm run test:unit   # Vitest — template parsing, utilities
 npm run test:e2e    # Playwright — Typst WASM compilation in browser
 ```
 
-### Deploy
-
-```bash
-npm run deploy            # Production
-npm run deploy:staging    # Staging
-```
-
 ## Architecture
 
 Templates in `app/templates/` export a `parse()` function that takes resume data and returns a Typst markup string. That string is compiled to SVG (preview) or PDF (download) by `window.$typst` on the client.

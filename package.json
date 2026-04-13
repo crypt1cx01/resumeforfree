@@ -6,7 +6,6 @@
   "scripts": {
     "build": "nuxt build",
     "deploy": "nuxt build && wrangler deploy",
-    "deploy:staging": "nuxt build && wrangler deploy --env staging",
     "lint": "eslint .",
     "lint:fix": "eslint . --fix",
     "dev": "nuxt dev",
