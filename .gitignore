@@ -32,7 +32,5 @@ ignore
 
 
 .dev.vars
-prod-dump.sql
-prod-schema.sql
-prod-data.sql
-prod-resumes.sql
+*.sql
+!migrations/*.sql
