@@ -77,15 +77,42 @@ export const contactMessages = sqliteTable('contact_messages', {
     emailIdx: index('idx_contact_messages_email').on(table.email),
 }));
 
-// Export types for use in application
-export type User = typeof users.$inferSelect;
-export type NewUser = typeof users.$inferInsert;
+export interface UserModel {
+    id: string;
+    email: string;
+    password_hash: string;
+    name?: string;
+    verified: boolean;
+    role: 'user' | 'admin';
+    verification_token?: string;
+    verification_sent_at?: string;
+    created_at: string;
+    updated_at: string;
+}
 
-export type Resume = typeof resumes.$inferSelect;
-export type NewResume = typeof resumes.$inferInsert;
+export interface UserSettingsModel {
+    id: string;
+    user_id: string;
+    settings: string | unknown;
+    created_at: string;
+    updated_at: string;
+}
 
-export type UserSetting = typeof userSettings.$inferSelect;
-export type NewUserSetting = typeof userSettings.$inferInsert;
+export interface ResumeModel {
+    id: string;
+    user_id: string;
+    name: string;
+    language: string;
+    is_active: boolean;
+    template: string;
+    data: string | unknown;
+    settings: string | unknown;
+    created_at: string;
+    updated_at: string;
+}
 
-export type ContactMessage = typeof contactMessages.$inferSelect;
-export type NewContactMessage = typeof contactMessages.$inferInsert;
+export interface PasswordResetTokenModel {
+    id: string;
+    user_id: string;
+    expires_at: string;
+}

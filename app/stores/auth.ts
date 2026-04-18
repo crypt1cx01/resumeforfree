@@ -1,25 +1,20 @@
 import { defineStore } from 'pinia';
+import type { User } from '~/types/user';
+import type { LoginRequest, RegisterRequest } from '~/types/api';
 
-interface AuthUser {
-    id: string;
-    email: string;
-    name?: string;
-    verified: boolean;
-    role?: 'user' | 'admin';
-}
 interface AuthState {
-    user: AuthUser | null;
+    user: User | null;
     token: string | null;
     isAuthenticated: boolean;
 }
 
 const USER_COOKIE = 'user_info';
 
-function decodeUserCookie(raw: string | null | undefined): AuthUser | null {
+function decodeUserCookie(raw: string | null | undefined): User | null {
     if (!raw) return null;
     try {
         const json = decodeURIComponent(escape(atob(raw)));
-        const parsed = JSON.parse(json) as AuthUser;
+        const parsed = JSON.parse(json) as User;
         if (!parsed?.id || !parsed?.email) return null;
         return parsed;
     }
@@ -56,9 +51,9 @@ export const useAuthStore = defineStore('auth', {
                 this.clearAuth();
             }
         },
-        async login(email: string, password?: string, turnstileToken?: string) {
+        async login(payload: LoginRequest) {
             const api = useApi();
-            return await api.auth.login(email, password, turnstileToken)
+            return await api.auth.login(payload)
                 .then((result) => {
                     if (result?.user) {
                         this.setAuth(result.user);
@@ -74,9 +69,9 @@ export const useAuthStore = defineStore('auth', {
                     };
                 });
         },
-        async register(email: string, password: string, passwordConfirm: string, name: string, turnstileToken?: string) {
+        async register(payload: RegisterRequest) {
             const api = useApi();
-            return await api.auth.register(email, password, passwordConfirm, name, turnstileToken)
+            return await api.auth.register(payload)
                 .then((result) => {
                     if (result?.user) {
                         this.setAuth(result.user);
@@ -130,7 +125,7 @@ export const useAuthStore = defineStore('auth', {
                     };
                 });
         },
-        setAuth(user: AuthUser) {
+        setAuth(user: User) {
             this.user = user;
             this.token = 'session';
             this.isAuthenticated = true;

@@ -8,8 +8,7 @@ import CloudSyncModal from '~/components/elements/CloudSyncModal.vue';
 import ResumesHeader from '~/components/resumes/ResumesHeader.vue';
 import ResumesGrid from '~/components/resumes/ResumesGrid.vue';
 import ResumesEmptyState from '~/components/resumes/ResumesEmptyState.vue';
-import type { ImportResumePreview } from '~/components/elements/ImportConfirmationModal.vue';
-import type { Resume } from '~/types/resume';
+import type { ImportResumePreview, Resume } from '~/types/resume';
 import { Button } from '~/components/ui/button';
 import { CheckCircle, Cloud, LogIn, UserPlus } from 'lucide-vue-next';
 
@@ -24,12 +23,29 @@ const fetchServerResumesIfLoggedIn = async () => {
     if (authStore.isLoggedIn) {
         try {
             await resumeStore.fetchServerResumes();
+            await maybeFulfilCloudSyncIntent();
         }
         catch (error) {
             console.error('Failed to fetch server resumes:', error);
         }
     }
 };
+
+const maybeFulfilCloudSyncIntent = async () => {
+    const { consumeIntent } = useCloudSyncIntent();
+    if (!consumeIntent()) return;
+
+    const { synced, skipped } = await resumeStore.syncLocalOnlyResumes();
+    if (synced > 0) {
+        const { toast } = await import('vue-sonner');
+        toast.success(t('notifications.autoSyncedToCloud', { count: synced }));
+    }
+    if (skipped > 0) {
+        const { toast } = await import('vue-sonner');
+        toast.info(t('notifications.cloudLimitReached', { count: skipped }));
+    }
+};
+
 onMounted(async () => {
     resumeStore.initialize();
     await fetchServerResumesIfLoggedIn();
@@ -75,7 +91,7 @@ const handleCreateResume = async (name: string, language: string, navigateToBuil
         ...defaultResumeSettings,
         selectedFont: getDefaultFontForLanguage(language),
     };
-    const newResumeId = resumeStore.createResume(resumeName, language, seededSettings);
+    const newResumeId = resumeStore.createResume({ name: resumeName, language, settings: seededSettings });
     resumeStore.setActiveResume(newResumeId);
     showCreateModal.value = false;
     if (saveToCloud && authStore.isLoggedIn) {

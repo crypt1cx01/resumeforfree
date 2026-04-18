@@ -1,7 +1,4 @@
-import type { Resume } from '~/types/resume';
-
-type ResumeCreatePayload = Pick<Resume, 'name' | 'data'> & Partial<Pick<Resume, 'language' | 'settings'>>;
-type ResumeUpdatePayload = Partial<Pick<Resume, 'name' | 'language' | 'data' | 'settings'>> & { isActive?: boolean };
+import type { ChangePasswordRequest, LoginRequest, RegisterRequest, ResumeCreateRequest, ResumeUpdateRequest } from '~/types/api';
 
 export const useApi = () => {
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -12,16 +9,16 @@ export const useApi = () => {
     };
     return {
         auth: {
-            async login(email: string, password?: string, turnstileToken?: string) {
+            async login(payload: LoginRequest) {
                 return await $fetch('/api/auth/login', {
                     method: 'POST',
-                    body: { email, password, turnstileToken },
+                    body: payload,
                 }).catch(handleError);
             },
-            async register(email: string, password: string, passwordConfirm: string, name: string, turnstileToken?: string) {
+            async register(payload: RegisterRequest) {
                 return await $fetch('/api/auth/register', {
                     method: 'POST',
-                    body: { email, password, name, turnstileToken },
+                    body: payload,
                 }).catch(handleError);
             },
             async logout() {
@@ -32,10 +29,10 @@ export const useApi = () => {
             async getSession() {
                 return await $fetch('/api/auth/session').catch(handleError);
             },
-            async changePassword(currentPassword: string, newPassword: string) {
+            async changePassword(payload: ChangePasswordRequest) {
                 return await $fetch('/api/auth/change-password', {
                     method: 'POST',
-                    body: { currentPassword, newPassword },
+                    body: payload,
                 }).catch(handleError);
             },
         },
@@ -46,13 +43,13 @@ export const useApi = () => {
             async get(id: string) {
                 return await $fetch(`/api/resumes/${id}`).then(({ resume }) => resume).catch(handleError);
             },
-            async create(payload: ResumeCreatePayload) {
+            async create(payload: ResumeCreateRequest) {
                 return await $fetch('/api/resumes', {
                     method: 'POST',
                     body: payload,
                 }).then(({ resume }) => resume).catch(handleError);
             },
-            async update(id: string, updates: ResumeUpdatePayload) {
+            async update(id: string, updates: ResumeUpdateRequest) {
                 return await $fetch(`/api/resumes/${id}`, {
                     method: 'PUT',
                     body: updates,

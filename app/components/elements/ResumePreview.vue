@@ -263,7 +263,7 @@ import { Button } from '~/components/ui/button';
 import { Popover, PopoverContent, PopoverTrigger } from '~/components/ui/popover';
 import { Menubar, MenubarContent, MenubarItem, MenubarMenu, MenubarTrigger } from '~/components/ui/menubar';
 import { ChevronDown, Download, MoreVertical, Settings, SlidersHorizontal } from 'lucide-vue-next';
-import { availableTemplates } from '~/types/resume';
+import { getTemplateList } from '~/templates';
 import { useResumeGenerator } from '~/composables/useResumeGenerator';
 import { useDebounceFn } from '@vueuse/core';
 import SettingsModal from '~/components/elements/SettingsModal.vue';
@@ -271,6 +271,8 @@ import ZoomControls from '~/components/elements/ZoomControls.vue';
 import { useSettingsStore } from '~/stores/settings';
 import { useResumeStore } from '~/stores/resume';
 import { storeToRefs } from 'pinia';
+
+const availableTemplates = getTemplateList();
 
 const { t } = useI18n();
 const { generatePreview, downloadPDF, downloadSVG, downloadTypst, downloadTypstText } = useResumeGenerator();
@@ -323,12 +325,8 @@ const generatePreviewInternal = async () => {
         if (!typstReady.value) {
             return;
         }
-        previewContent.value = await generatePreview({
-            resumeData: resumeData.value,
-            templateId: selectedTemplate.value,
-            font: selectedFont.value,
-            locale: resumeStore.activeResumeLanguage,
-        });
+        if (!resumeStore.activeResume) return;
+        previewContent.value = await generatePreview(resumeStore.activeResume);
     }
     catch (err) {
         console.error(err);
@@ -339,16 +337,10 @@ const generatePreviewInternal = async () => {
     }
 };
 const handleDownload = async () => {
-    if (!resumeData.value) return;
+    if (!resumeStore.activeResume) return;
     try {
-        await downloadPDF({
-            resumeData: resumeData.value,
-            templateId: selectedTemplate.value,
-            font: selectedFont.value,
-            locale: resumeStore.activeResumeLanguage,
-        });
-        // Fire-and-forget: increment download counter without blocking UX
-        $fetch('/api/increase-downloads-count', { method: 'POST' }).catch(() => { /* fire-and-forget */ });
+        await downloadPDF(resumeStore.activeResume);
+        $fetch('/api/increase-downloads-count', { method: 'POST' }).catch(console.debug);
     }
     catch (err) {
         error.value = err instanceof Error ? err.message : 'Failed to download PDF';
@@ -356,14 +348,9 @@ const handleDownload = async () => {
     }
 };
 const handleDownloadSVG = async () => {
-    if (!resumeData.value) return;
+    if (!resumeStore.activeResume) return;
     try {
-        await downloadSVG({
-            resumeData: resumeData.value,
-            templateId: selectedTemplate.value,
-            font: selectedFont.value,
-            locale: resumeStore.activeResumeLanguage,
-        });
+        await downloadSVG(resumeStore.activeResume);
     }
     catch (err) {
         error.value = err instanceof Error ? err.message : 'Failed to download SVG';
@@ -371,14 +358,9 @@ const handleDownloadSVG = async () => {
     }
 };
 const handleDownloadTypst = () => {
-    if (!resumeData.value) return;
+    if (!resumeStore.activeResume) return;
     try {
-        downloadTypst({
-            resumeData: resumeData.value,
-            templateId: selectedTemplate.value,
-            font: selectedFont.value,
-            locale: resumeStore.activeResumeLanguage,
-        });
+        downloadTypst(resumeStore.activeResume);
     }
     catch (err) {
         error.value = err instanceof Error ? err.message : 'Failed to download Typst';
@@ -386,14 +368,9 @@ const handleDownloadTypst = () => {
     }
 };
 const handleDownloadTypstText = () => {
-    if (!resumeData.value) return;
+    if (!resumeStore.activeResume) return;
     try {
-        downloadTypstText({
-            resumeData: resumeData.value,
-            templateId: selectedTemplate.value,
-            font: selectedFont.value,
-            locale: resumeStore.activeResumeLanguage,
-        });
+        downloadTypstText(resumeStore.activeResume);
     }
     catch (err) {
         error.value = err instanceof Error ? err.message : 'Failed to download Typst as text';

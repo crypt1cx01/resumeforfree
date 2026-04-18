@@ -178,27 +178,33 @@ export const useResumeStore = defineStore('resume', {
                 }
                 if (!resume.language) {
                     const settingsStore = useSettingsStore();
-                    const i18nKeys = Object.keys(resume.data.sectionHeadersI18n || {});
-                    resume.language = i18nKeys[0] || settingsStore.settings.locale || 'en';
+                    resume.language = settingsStore.settings.locale || 'en';
                 }
                 if (!resume.settings || Object.keys(resume.settings).length === 0) {
                     const settingsStore = useSettingsStore();
                     resume.settings = resumeSettingsFromLegacy(settingsStore.settings as Partial<ResumeSettings>);
+                }
+                const legacyI18n = (resume.data as unknown as { sectionHeadersI18n?: Record<string, Partial<SectionHeaders>> }).sectionHeadersI18n;
+                if (legacyI18n) {
+                    const overlay = legacyI18n[resume.language] || Object.values(legacyI18n)[0] || {};
+                    const base = resume.data.sectionHeaders || ({} as SectionHeaders);
+                    resume.data.sectionHeaders = { ...base, ...overlay } as SectionHeaders;
+                    delete (resume.data as unknown as { sectionHeadersI18n?: unknown }).sectionHeadersI18n;
                 }
             });
             if (!this.activeResumeId && Object.keys(this.resumes).length > 0) {
                 this.activeResumeId = Object.keys(this.resumes)[0];
             }
         },
-        createResume(name?: string, language = 'en', settings?: ResumeSettings): string {
+        createResume(input: { name?: string; language?: string; settings?: ResumeSettings } = {}): string {
             const id = `resume-${this.nextId}`;
             const timestamp = new Date().toISOString();
             this.resumes[id] = {
                 id,
-                name: name || `Resume ${this.nextId}`,
-                language,
+                name: input.name || `Resume ${this.nextId}`,
+                language: input.language || 'en',
                 data: { ...defaultResumeData },
-                settings: settings ? { ...settings } : { ...defaultResumeSettings },
+                settings: input.settings ? { ...input.settings } : { ...defaultResumeSettings },
                 createdAt: timestamp,
                 updatedAt: timestamp,
             };
@@ -815,21 +821,11 @@ export const useResumeStore = defineStore('resume', {
                 this.updateResumeData(this.activeResumeId, { sectionOrder: { ...newOrder } });
             }
         },
-        updateSectionHeader(section: keyof SectionHeaders, headerText: string, locale: string) {
+        updateSectionHeader(section: keyof SectionHeaders, headerText: string) {
             if (this.activeResumeId) {
-                const currentData = this.resumes[this.activeResumeId].data;
-
-                // Initialize sectionHeadersI18n if it doesn't exist
-                const i18nHeaders = currentData.sectionHeadersI18n || {};
-
-                // Initialize locale object if it doesn't exist
-                const localeHeaders = i18nHeaders[locale] || {};
-
-                // Update the header for the current locale
-                const newLocaleHeaders = { ...localeHeaders, [section]: headerText };
-                const newI18nHeaders = { ...i18nHeaders, [locale]: newLocaleHeaders };
-
-                this.updateResumeData(this.activeResumeId, { sectionHeadersI18n: newI18nHeaders });
+                const currentHeaders = this.resumes[this.activeResumeId].data.sectionHeaders || {} as SectionHeaders;
+                const newHeaders = { ...currentHeaders, [section]: headerText };
+                this.updateResumeData(this.activeResumeId, { sectionHeaders: newHeaders });
             }
         },
         updateSectionPlacement(section: keyof SectionPlacement, placement: 'left' | 'right') {
@@ -997,6 +993,27 @@ export const useResumeStore = defineStore('resume', {
                 }
             }
             return null;
+        },
+        async syncLocalOnlyResumes(): Promise<{ synced: number; skipped: number }> {
+            const localOnly = Object.values(this.resumes)
+                .filter(r => !r.serverId)
+                .sort((a, b) => new Date(b.updatedAt).getTime() - new Date(a.updatedAt).getTime());
+
+            const remainingSlots = Math.max(0, 3 - this.cloudInfo.count);
+            const toSync = localOnly.slice(0, remainingSlots);
+            const skipped = localOnly.length - toSync.length;
+
+            let synced = 0;
+            for (const resume of toSync) {
+                try {
+                    await this.syncResumeToServer(resume.id);
+                    synced++;
+                }
+                catch (error) {
+                    console.error(`Failed to auto-sync resume ${resume.id}:`, error);
+                }
+            }
+            return { synced, skipped };
         },
         async syncResumeToServer(resumeId: string) {
             const resume = this.resumes[resumeId];
