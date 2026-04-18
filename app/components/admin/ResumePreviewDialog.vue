@@ -89,9 +89,9 @@ import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, D
 import { Button } from '~/components/ui/button';
 import { X } from 'lucide-vue-next';
 import { useResumeGenerator } from '~/composables/useResumeGenerator';
-import type { ResumeData, AppSettings } from '~/types/resume';
-import { defaultAppSettings } from '~/types/resume';
-import { isRtlLocale } from '~/utils/localeUtils';
+import type { ResumeData, ResumeSettings, AppSettings } from '~/types/resume';
+import { resumeSettingsFromLegacy } from '~/types/resume';
+import { getLocaleDirection } from '~/composables/useLocale';
 
 const props = defineProps<{
     modelValue: boolean;
@@ -107,7 +107,8 @@ const emit = defineEmits<{
 
 const { generatePreview } = useResumeGenerator();
 const { isReady: typstReady } = useTypstLoader();
-const { t: globalT } = useI18n();
+const i18n = useI18n({ useScope: 'global' });
+const { loadLocaleMessages } = i18n;
 
 const isOpen = computed({
     get: () => props.modelValue,
@@ -118,15 +119,10 @@ const isLoading = ref(false);
 const error = ref<string | null>(null);
 const previewContent = ref<string>('');
 const userLocale = ref<string>('en');
-const userDir = computed(() => (isRtlLocale(userLocale.value) ? 'rtl' : 'ltr'));
+const userDir = computed(() => getLocaleDirection(userLocale.value));
 
-// Scoped translator — resolves against the resume owner's saved locale,
-// NOT the admin's active UI locale.
-const t = (key: string, named?: Record<string, unknown>) => {
-    return named
-        ? globalT(key, named, { locale: userLocale.value })
-        : globalT(key, {}, { locale: userLocale.value });
-};
+const t = (key: string, named?: Record<string, unknown>) =>
+    named ? i18n.t(key, named, { locale: userLocale.value }) : i18n.t(key, 1, { locale: userLocale.value });
 
 const loadResume = async () => {
     if (!props.resumeId) return;
@@ -136,29 +132,24 @@ const loadResume = async () => {
     previewContent.value = '';
 
     try {
-        // Fetch resume data and user settings in parallel
         const [resumeResponse, userSettingsResponse] = await Promise.all([
             $fetch(`/api/admin/resumes/${props.resumeId}`),
             $fetch(`/api/admin/users/${props.userId}/settings`).catch(() => ({ settings: null })),
         ]);
 
         const resumeData = resumeResponse.data as ResumeData;
+        const resumeSettings = resumeResponse.settings as Partial<ResumeSettings> | null;
+        const userSettings = userSettingsResponse.settings as Partial<AppSettings> | null;
 
-        // Merge user settings with defaults (user settings take precedence)
-        const userSettings = userSettingsResponse.settings as AppSettings | null;
-        const settings: AppSettings = {
-            ...defaultAppSettings,
-            ...userSettings,
-        };
+        userLocale.value = resumeResponse.language || userSettings?.locale || 'en';
+        await loadLocaleMessages(userLocale.value);
 
-        // Set dialog direction based on user's saved locale
-        userLocale.value = settings.locale || 'en';
+        const effectiveSettings = resumeSettings && Object.keys(resumeSettings).length
+            ? { ...resumeSettingsFromLegacy(userSettings), ...resumeSettings }
+            : resumeSettingsFromLegacy(userSettings);
+        const template = effectiveSettings.selectedTemplate;
+        const font = effectiveSettings.selectedFont;
 
-        // Use user's preferred template and font
-        const template = settings.selectedTemplate || resumeResponse.template || 'default';
-        const font = settings.selectedFont || 'Calibri';
-
-        // Wait for Typst to be ready
         if (!typstReady.value) {
             await new Promise((resolve) => {
                 const unwatch = watch(
@@ -178,8 +169,12 @@ const loadResume = async () => {
             throw new Error('Typst compiler not ready');
         }
 
-        // Generate preview with user's font and template
-        previewContent.value = await generatePreview(resumeData, template, font, userLocale.value);
+        previewContent.value = await generatePreview({
+            resumeData,
+            templateId: template,
+            font,
+            locale: userLocale.value,
+        });
     }
     catch (err) {
         console.error('Error loading resume preview:', err);
