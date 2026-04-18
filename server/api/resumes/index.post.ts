@@ -15,7 +15,7 @@ class DatabaseService {
     async createResume(userId: string, payload: { name: string; data: unknown; language?: string | null; settings?: Record<string, unknown> | null }): Promise<string> {
         const resumeId = crypto.randomUUID().replace(/-/g, '').slice(0, 16);
         const settings = payload.settings ?? {};
-        const template = (settings as { selectedTemplate?: string }).selectedTemplate || 'default';
+        const template = (settings as { selectedTemplate?: string }).selectedTemplate || 'compact';
         await this.db
             .prepare('INSERT INTO resumes (id, user_id, name, is_active, template, language, data, settings) VALUES (?, ?, ?, 0, ?, ?, ?, ?)')
             .bind(resumeId, userId, payload.name, template, payload.language ?? null, JSON.stringify(payload.data), JSON.stringify(settings))

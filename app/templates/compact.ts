@@ -134,7 +134,7 @@ ${fullContent}
 export const compactTemplate: Template = {
     id: 'compact',
     name: 'Compact',
-    description: 'Single column template for comprehensive resumes with more information',
+    description: 'Single column ATS friendly template',
     layoutConfig: {
         isTwoColumn: false,
         movableSections: [],

@@ -3,11 +3,11 @@ import { defaultTemplate } from './default';
 import { compactTemplate } from './compact';
 
 export const templates: Record<string, Template> = {
-    default: defaultTemplate,
     compact: compactTemplate,
+    default: defaultTemplate,
 };
 export const getTemplate = (id: string): Template => {
-    return templates[id] || defaultTemplate;
+    return templates[id] || compactTemplate;
 };
 export const getTemplateList = () => {
     return Object.values(templates);

@@ -13,7 +13,7 @@ export const useTemplate = () => {
             case 'compact':
                 return compactTemplate;
             default:
-                return defaultTemplate;
+                return compactTemplate;
         }
     };
     const getCurrentLayoutConfig = (): TemplateColumnLayout => {

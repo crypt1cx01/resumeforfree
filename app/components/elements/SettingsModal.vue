@@ -203,9 +203,9 @@ const updateTemplate = (value: string) => {
 const resetToDefaults = () => {
     fontSize.value = [14];
     selectedFont.value = 'Calibri';
-    selectedTemplate.value = 'default';
+    selectedTemplate.value = 'compact';
     settingsStore.setFontSize(14);
-    settingsStore.setSelectedTemplate('default');
+    settingsStore.setSelectedTemplate('compact');
 };
 
 const close = () => {

@@ -107,8 +107,8 @@ ${twoColumnLayout}
 };
 export const defaultTemplate: Template = {
     id: 'default',
-    name: 'Default',
-    description: 'A clean and professional resume template',
+    name: 'Two Column',
+    description: 'A two-column resume layout with sections side by side',
     layoutConfig: {
         isTwoColumn: true,
         leftColumnRatio: '7fr',

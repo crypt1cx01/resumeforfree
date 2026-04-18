@@ -26,7 +26,7 @@
                                     variant="outline"
                                 >
                                     <span>{{
-                                        (availableTemplates?.find(t => t.id === selectedTemplate).name || 'Default')
+                                        (availableTemplates?.find(t => t.id === selectedTemplate)?.name || 'Compact')
                                     }} {{ t('builder.template') }}</span>
                                     <ChevronDown class="w-4 h-4 ms-2" />
                                 </Button>

@@ -206,7 +206,7 @@ export const defaultUserSettings: UserSettings = {
 };
 export const defaultResumeSettings: ResumeSettings = {
     selectedFont: 'Calibri',
-    selectedTemplate: 'default',
+    selectedTemplate: 'compact',
     fontSize: 12,
     isRawMode: false,
     sectionCollapsed: {

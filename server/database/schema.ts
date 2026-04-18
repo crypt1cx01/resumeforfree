@@ -31,7 +31,7 @@ export const resumes = sqliteTable('resumes', {
     userId: text('user_id').notNull().references(() => users.id, { onDelete: 'cascade' }),
     name: text('name').notNull(),
     isActive: integer('is_active', { mode: 'boolean' }).default(false),
-    template: text('template').default('default'),
+    template: text('template').default('compact'),
     language: text('language'),
     data: text('data', { mode: 'json' }).$type<ResumeData>().notNull(),
     settings: text('settings', { mode: 'json' }).$type<ResumeSettings>(),
