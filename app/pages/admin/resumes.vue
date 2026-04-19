@@ -7,21 +7,38 @@
             </p>
         </div>
 
-        <!-- Search Bar -->
-        <div class="relative">
-            <Search class="absolute start-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400 pointer-events-none" />
-            <Input
-                v-model="searchQuery"
-                type="text"
-                :placeholder="$t('admin.resumes.searchPlaceholder')"
-                class="ps-10"
-            />
-            <div
-                v-if="isSearching"
-                class="absolute end-3 top-1/2 -translate-y-1/2"
-            >
-                <div class="animate-spin rounded-full h-4 w-4 border-b-2 border-blue-600" />
+        <!-- Search + Filters -->
+        <div class="flex flex-col sm:flex-row gap-2">
+            <div class="relative flex-1">
+                <Search class="absolute start-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400 pointer-events-none" />
+                <Input
+                    v-model="searchQuery"
+                    type="text"
+                    :placeholder="$t('admin.resumes.searchPlaceholder')"
+                    class="ps-10"
+                />
+                <div
+                    v-if="isSearching"
+                    class="absolute end-3 top-1/2 -translate-y-1/2"
+                >
+                    <div class="animate-spin rounded-full h-4 w-4 border-b-2 border-blue-600" />
+                </div>
             </div>
+            <select
+                v-model="languageFilter"
+                class="px-3 py-2 text-sm border rounded-md bg-white focus:ring-2 focus:ring-blue-500 focus:border-blue-500 sm:w-48"
+            >
+                <option value="">
+                    {{ $t('admin.resumes.allLanguages') }}
+                </option>
+                <option
+                    v-for="lang in availableLocales"
+                    :key="lang.code"
+                    :value="lang.code"
+                >
+                    {{ lang.name }}
+                </option>
+            </select>
         </div>
 
         <!-- Loading State -->
@@ -245,13 +262,18 @@ definePageMeta({
     layout: 'admin',
 });
 
-const { t } = useI18n();
+const { t, locales } = useI18n();
+
+const availableLocales = computed(() =>
+    locales.value.map(l => ({ code: l.code, name: l.name || l.code })),
+);
 
 const resumes = ref<Resume[]>([]);
 const loading = ref(true);
 const showPreview = ref(false);
 const previewResume = ref<Resume | null>(null);
 const currentPage = ref(1);
+const languageFilter = ref('');
 const pagination = ref<Pagination>({
     page: 1,
     limit: 50,
@@ -273,6 +295,7 @@ const fetchResumes = async () => {
                 page: currentPage.value,
                 limit: 50,
                 search: debouncedQuery.value || undefined,
+                language: languageFilter.value || undefined,
             },
             signal: abortController.value?.signal,
         });
@@ -297,6 +320,12 @@ const fetchResumes = async () => {
 watch(debouncedQuery, () => {
     currentPage.value = 1; // Reset to first page on search
     isSearching.value = true;
+    fetchResumes();
+});
+
+// Language filter: re-fetch from page 1 on change
+watch(languageFilter, () => {
+    currentPage.value = 1;
     fetchResumes();
 });
 

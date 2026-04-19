@@ -828,6 +828,7 @@
       "description": "View all resumes created by users",
       "noResumes": "No resumes found",
       "searchPlaceholder": "Search by resume name or owner email...",
+      "allLanguages": "All languages",
       "owner": "Owner",
       "name": "Resume Name",
       "language": "Language",

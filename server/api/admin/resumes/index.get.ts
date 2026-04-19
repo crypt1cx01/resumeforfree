@@ -1,4 +1,4 @@
-import { count, desc, or, like, eq } from 'drizzle-orm';
+import { and, count, desc, or, like, eq } from 'drizzle-orm';
 import { resumes, users } from '../../../database/schema';
 
 export default defineEventHandler(async (event) => {
@@ -14,14 +14,19 @@ export default defineEventHandler(async (event) => {
         const limit = Math.min(100, Math.max(1, parseInt(query.limit as string) || 50));
         const offset = (page - 1) * limit;
         const search = (query.search as string || '').trim();
+        const language = (query.language as string || '').trim();
 
-        // Build WHERE clause for search
-        const whereCondition = search
-            ? or(
-                    like(resumes.name, `%${search}%`),
-                    like(users.email, `%${search}%`),
-                )
-            : undefined;
+        const filters = [
+            search
+                ? or(
+                        like(resumes.name, `%${search}%`),
+                        like(users.email, `%${search}%`),
+                    )
+                : undefined,
+            language ? eq(resumes.language, language) : undefined,
+        ].filter(Boolean);
+
+        const whereCondition = filters.length > 0 ? and(...filters) : undefined;
 
         // Get total count and resumes in parallel
         const [totalResult, resumesResult] = await Promise.all([
