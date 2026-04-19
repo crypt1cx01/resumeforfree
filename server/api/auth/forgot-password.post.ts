@@ -9,7 +9,9 @@ const MIN_INTERVAL_MINUTES = 5; // Minimum 5 minutes between requests
 export default defineEventHandler(async (event) => {
     const config = useRuntimeConfig();
     const db = event.context.cloudflare?.env?.DB as D1Database | undefined;
-    const resendApiKey = event.context.cloudflare?.env?.RESEND_KEY as string | undefined;
+    const sendEmail = event.context.cloudflare?.env?.SEND_EMAIL as {
+        send(msg: { from: string; to: string; subject: string; text?: string; html?: string }): Promise<void>;
+    } | undefined;
 
     const body = await readBody(event);
     const { email, turnstileToken } = body;
@@ -41,8 +43,8 @@ export default defineEventHandler(async (event) => {
         };
     }
 
-    if (!resendApiKey) {
-        console.error('RESEND_KEY not configured');
+    if (!sendEmail) {
+        console.error('SEND_EMAIL binding not configured');
         throw createError({
             statusCode: 500,
             statusMessage: 'Email service not configured',
@@ -120,7 +122,7 @@ export default defineEventHandler(async (event) => {
             .run();
 
         // Send email with unhashed token
-        const emailSent = await sendPasswordResetEmail(resendApiKey, user.email, token);
+        const emailSent = await sendPasswordResetEmail(sendEmail, user.email, token);
 
         if (!emailSent) {
             console.error('Failed to send password reset email to:', email);

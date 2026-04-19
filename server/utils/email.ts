@@ -1,17 +1,24 @@
+interface SendEmailBinding {
+    send(message: {
+        from: string;
+        to: string;
+        subject: string;
+        text?: string;
+        html?: string;
+    }): Promise<void>;
+}
+
 const BASE_URL = process.env.NODE_ENV === 'production'
     ? 'https://resumeforfree.com'
     : 'http://localhost:3000';
 
+const FROM_ADDRESS = 'Resume For Free <noreply@contact.resumeforfree.com>';
+
 export async function sendPasswordResetEmail(
-    resendApiKey: string,
+    sender: SendEmailBinding,
     email: string,
     token: string,
 ): Promise<boolean> {
-    if (!resendApiKey) {
-        console.error('Resend API key not configured');
-        return false;
-    }
-
     const resetUrl = `${BASE_URL}/auth/reset-password?token=${token}`;
 
     const htmlContent = `
@@ -57,27 +64,16 @@ export async function sendPasswordResetEmail(
 </html>
     `.trim();
 
+    const textContent = `Reset your password\n\nWe received a request to reset your password. Open the link below to create a new password:\n\n${resetUrl}\n\nThis link expires in 1 hour. If you didn't request this, ignore this email.`;
+
     try {
-        const response = await fetch('https://api.resend.com/emails', {
-            method: 'POST',
-            headers: {
-                'Authorization': `Bearer ${resendApiKey}`,
-                'Content-Type': 'application/json',
-            },
-            body: JSON.stringify({
-                from: 'Resume Builder <noreply@resumeforfree.com>',
-                to: [email],
-                subject: 'Reset Your Password - Resume Builder',
-                html: htmlContent,
-            }),
+        await sender.send({
+            from: FROM_ADDRESS,
+            to: email,
+            subject: 'Reset Your Password - Resume For Free',
+            html: htmlContent,
+            text: textContent,
         });
-
-        if (!response.ok) {
-            const errorData = await response.json();
-            console.error('Resend API error:', errorData);
-            return false;
-        }
-
         return true;
     }
     catch (error) {
