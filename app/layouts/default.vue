@@ -1,5 +1,5 @@
 <script lang="ts" setup>
-import { Edit, FileText, Github, HelpCircle, LogOut, Mail, Menu, User, X, LayoutDashboard } from 'lucide-vue-next';
+import { Edit, FileText, Github, HelpCircle, LogOut, Mail, Menu, User, X } from 'lucide-vue-next';
 import LanguageSelector from '~/components/elements/LanguageSelector.vue';
 import { Toaster } from '@/components/ui/sonner';
 import { Button } from '@/components/ui/button';
@@ -73,18 +73,6 @@ watch(
                                 <Edit class="w-4 h-4" />
                                 <span class="hidden sm:inline text-sm font-medium">{{ t('navigation.builder') }}</span>
                             </NuxtLink>
-
-                            <!-- Admin Dashboard Link (only for admins) -->
-                            <ClientOnly>
-                                <NuxtLink
-                                    v-if="authStore.user?.role === 'admin'"
-                                    class="flex items-center space-x-1 md:space-x-2 text-purple-600 hover:text-purple-900 transition-colors"
-                                    to="/admin"
-                                >
-                                    <LayoutDashboard class="w-4 h-4" />
-                                    <span class="hidden sm:inline text-sm font-medium">{{ t('navigation.admin') }}</span>
-                                </NuxtLink>
-                            </ClientOnly>
 
                             <!-- Language Selector -->
                             <LanguageSelector
@@ -229,15 +217,6 @@ watch(
                             >
                                 <User class="w-4 h-4" />
                                 <span>{{ authStore.currentUser?.name || authStore.currentUser?.email }}</span>
-                            </NuxtLink>
-                            <NuxtLink
-                                v-if="authStore.user?.role === 'admin'"
-                                to="/admin"
-                                class="flex items-center space-x-2 text-sm text-purple-600 hover:text-purple-900 p-2"
-                                @click="closeMobileMenu"
-                            >
-                                <LayoutDashboard class="w-4 h-4" />
-                                <span>{{ t('navigation.admin') }}</span>
                             </NuxtLink>
                             <Button
                                 variant="ghost"

@@ -14,12 +14,10 @@ export const users = sqliteTable('users', {
     verified: integer('verified', { mode: 'boolean' }).default(false),
     verificationToken: text('verification_token'),
     verificationSentAt: text('verification_sent_at'), // SQLite uses TEXT for dates
-    role: text('role', { enum: ['user', 'admin'] }).default('user').notNull(),
     createdAt: text('created_at').default(sql`CURRENT_TIMESTAMP`),
     updatedAt: text('updated_at').default(sql`CURRENT_TIMESTAMP`),
 }, table => ({
     emailIdx: index('idx_users_email').on(table.email),
-    roleIdx: index('idx_users_role').on(table.role),
 }));
 
 /**
@@ -83,7 +81,6 @@ export interface UserModel {
     password_hash: string;
     name?: string;
     verified: boolean;
-    role: 'user' | 'admin';
     verification_token?: string;
     verification_sent_at?: string;
     created_at: string;

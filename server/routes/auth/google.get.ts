@@ -26,13 +26,11 @@ export default defineOAuthGoogleEventHandler({
                     email,
                     name: googleUser.name || googleUser.given_name || email.split('@')[0],
                     verified: true,
-                    role: 'user' as const,
                 };
                 const token = await jwt.sign(
                     {
                         sub: mockUser.id,
                         email: mockUser.email,
-                        role: mockUser.role,
                         iat: Math.floor(Date.now() / 1000),
                         exp: Math.floor(Date.now() / 1000) + (30 * 24 * 60 * 60),
                     },
@@ -75,7 +73,6 @@ export default defineOAuthGoogleEventHandler({
                 {
                     sub: user.id as string,
                     email: user.email as string,
-                    role: (user.role as string) || 'user',
                     iat: Math.floor(Date.now() / 1000),
                     exp: Math.floor(Date.now() / 1000) + (30 * 24 * 60 * 60),
                 },
@@ -87,7 +84,6 @@ export default defineOAuthGoogleEventHandler({
                 email: user.email as string,
                 name: (user.name as string) || undefined,
                 verified: Boolean(user.verified),
-                role: (user.role as 'user' | 'admin') || 'user',
             });
 
             return sendRedirect(event, '/resumes');

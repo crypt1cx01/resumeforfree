@@ -23,7 +23,6 @@ export function setAuthCookies(event: H3Event, token: string, user: User) {
         email: user.email,
         name: user.name,
         verified: user.verified,
-        role: user.role,
     };
     const encoded = btoa(unescape(encodeURIComponent(JSON.stringify(payload))));
 

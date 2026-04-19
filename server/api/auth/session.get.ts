@@ -31,7 +31,7 @@ export default defineEventHandler(async (event) => {
             });
         }
         const decoded = jwt.decode(token);
-        const payload = decoded.payload as { sub: string; email?: string; role?: 'user' | 'admin' };
+        const payload = decoded.payload as { sub: string; email?: string };
         const db = event.context.cloudflare?.env?.DB;
         if (!db) {
             if (!payload.email) {
@@ -46,7 +46,6 @@ export default defineEventHandler(async (event) => {
                 email: payload.email,
                 name: payload.email.split('@')[0],
                 verified: true,
-                role: payload.role || 'user' as const,
             };
             setAuthCookies(event, token, mockUser);
             return { user: mockUser };
@@ -65,7 +64,6 @@ export default defineEventHandler(async (event) => {
             email: user.email,
             name: user.name,
             verified: user.verified,
-            role: user.role,
         };
         setAuthCookies(event, token, publicUser);
         return { user: publicUser };

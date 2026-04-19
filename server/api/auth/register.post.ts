@@ -56,13 +56,11 @@ export default defineEventHandler(async (event) => {
             email,
             name: name || email.split('@')[0],
             verified: true,
-            role: 'user' as const,
         };
         const token = await jwt.sign(
             {
                 sub: mockUser.id,
                 email: mockUser.email,
-                role: mockUser.role,
                 iat: Math.floor(Date.now() / 1000),
                 exp: Math.floor(Date.now() / 1000) + (30 * 24 * 60 * 60),
             },
@@ -109,12 +107,10 @@ export default defineEventHandler(async (event) => {
     }
     const passwordHash = await bcrypt.hash(password, 12);
     const userId = await dbService.createUser(email, passwordHash, name);
-    const defaultRole = 'user';
     const token = await jwt.sign(
         {
             sub: userId,
             email: email,
-            role: defaultRole,
             iat: Math.floor(Date.now() / 1000),
             exp: Math.floor(Date.now() / 1000) + (30 * 24 * 60 * 60),
         },
@@ -125,7 +121,6 @@ export default defineEventHandler(async (event) => {
         email: email,
         name: name || email.split('@')[0],
         verified: true,
-        role: defaultRole,
     };
     setAuthCookies(event, token, publicUser);
     return {
