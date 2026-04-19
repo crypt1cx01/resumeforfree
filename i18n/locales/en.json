@@ -829,6 +829,7 @@
       "noResumes": "No resumes found",
       "searchPlaceholder": "Search by resume name or owner email...",
       "allLanguages": "All languages",
+      "pageSize": "Per page",
       "owner": "Owner",
       "name": "Resume Name",
       "language": "Language",

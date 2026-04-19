@@ -128,9 +128,14 @@ watch(
     },
 );
 
-onMounted(() => {
+onMounted(async () => {
     settingsStore.initialize();
     resumeStore.initialize();
+    if (authStore.isLoggedIn) {
+        await resumeStore.fetchServerResumes().catch((err) => {
+            console.error('[builder] server fetch failed:', err);
+        });
+    }
     checkOtherModals();
 });
 watch(() => authStore.isAuthenticated, (isAuthenticated) => {

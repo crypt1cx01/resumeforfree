@@ -39,6 +39,19 @@
                     {{ lang.name }}
                 </option>
             </select>
+            <select
+                v-model.number="pageSize"
+                class="px-3 py-2 text-sm border rounded-md bg-white focus:ring-2 focus:ring-blue-500 focus:border-blue-500 sm:w-32"
+                :aria-label="$t('admin.resumes.pageSize')"
+            >
+                <option
+                    v-for="size in pageSizeOptions"
+                    :key="size"
+                    :value="size"
+                >
+                    {{ size }} / {{ $t('admin.resumes.pageSize') }}
+                </option>
+            </select>
         </div>
 
         <!-- Loading State -->
@@ -71,6 +84,7 @@
                 v-for="resume in resumes"
                 :key="resume.id"
                 class="p-4"
+                :class="resume.id === lastViewedId ? 'bg-gray-100' : ''"
             >
                 <div class="space-y-3">
                     <div class="flex items-start justify-between gap-2">
@@ -78,7 +92,7 @@
                             <p class="text-sm font-medium text-gray-900 truncate">
                                 {{ resume.name || 'Untitled Resume' }}
                             </p>
-                            <p class="text-xs text-gray-600 truncate mt-0.5">
+                            <p class="text-xs text-gray-600 break-all mt-0.5">
                                 {{ resume.user_email || resume.user_id }}
                             </p>
                             <p
@@ -170,6 +184,7 @@
                             <tr
                                 v-for="resume in resumes"
                                 :key="resume.id"
+                                :class="resume.id === lastViewedId ? 'bg-gray-100' : ''"
                             >
                                 <td class="px-4 lg:px-6 py-4 whitespace-nowrap">
                                     <Button
@@ -184,7 +199,7 @@
                                 <td class="px-4 lg:px-6 py-4 text-sm font-medium text-gray-900 max-w-[200px] truncate">
                                     {{ resume.name || 'Untitled Resume' }}
                                 </td>
-                                <td class="px-4 lg:px-6 py-4 text-sm text-gray-700 max-w-[200px] truncate">
+                                <td class="px-4 lg:px-6 py-4 text-sm text-gray-700 max-w-[220px] break-all">
                                     {{ resume.user_email || resume.user_id }}
                                 </td>
                                 <td class="px-4 lg:px-6 py-4 whitespace-nowrap text-sm text-gray-700 uppercase">
@@ -271,18 +286,30 @@ const availableLocales = computed(() =>
     locales.value.map(l => ({ code: l.code, name: l.name || l.code })),
 );
 
+const PAGE_SIZE_KEY = 'admin.resumes.pageSize';
+const LAST_VIEWED_KEY = 'admin.resumes.lastViewedId';
+const pageSizeOptions = [25, 50, 100, 200];
+
 const resumes = ref<Resume[]>([]);
 const loading = ref(true);
 const showPreview = ref(false);
 const previewResume = ref<Resume | null>(null);
 const currentPage = ref(1);
 const languageFilter = ref('');
+const pageSize = ref(50);
+const lastViewedId = ref<string>('');
 const pagination = ref<Pagination>({
     page: 1,
     limit: 50,
     total: 0,
     totalPages: 0,
 });
+
+if (import.meta.client) {
+    const storedSize = parseInt(localStorage.getItem(PAGE_SIZE_KEY) || '');
+    if (pageSizeOptions.includes(storedSize)) pageSize.value = storedSize;
+    lastViewedId.value = localStorage.getItem(LAST_VIEWED_KEY) || '';
+}
 
 // Setup debounced search
 const { searchQuery, debouncedQuery, isSearching, abortController } = useDebouncedSearch({
@@ -296,7 +323,7 @@ const fetchResumes = async () => {
         const data = await $fetch('/api/admin/resumes', {
             query: {
                 page: currentPage.value,
-                limit: 50,
+                limit: pageSize.value,
                 search: debouncedQuery.value || undefined,
                 language: languageFilter.value || undefined,
             },
@@ -332,6 +359,13 @@ watch(languageFilter, () => {
     fetchResumes();
 });
 
+// Page size change: persist, reset to page 1, re-fetch
+watch(pageSize, (size) => {
+    if (import.meta.client) localStorage.setItem(PAGE_SIZE_KEY, String(size));
+    currentPage.value = 1;
+    fetchResumes();
+});
+
 const goToPage = (page: number) => {
     currentPage.value = page;
     fetchResumes();
@@ -340,6 +374,8 @@ const goToPage = (page: number) => {
 const openPreview = (resume: Resume) => {
     previewResume.value = resume;
     showPreview.value = true;
+    lastViewedId.value = resume.id;
+    if (import.meta.client) localStorage.setItem(LAST_VIEWED_KEY, resume.id);
 };
 
 const onLanguageUpdated = ({ resumeId, language }: { resumeId: string; language: string }) => {
