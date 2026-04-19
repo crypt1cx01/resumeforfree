@@ -82,6 +82,50 @@ export async function sendPasswordResetEmail(
     }
 }
 
+export async function sendContactNotificationEmail(
+    sender: SendEmailBinding,
+    adminAddress: string,
+    submission: { name: string; email: string; subject: string; message: string },
+): Promise<boolean> {
+    const escapeHtml = (s: string) =>
+        s.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
+
+    const htmlContent = `
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+</head>
+<body style="font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Arial, sans-serif; line-height: 1.6; color: #333; max-width: 600px; margin: 0 auto; padding: 20px;">
+    <h2 style="color: #1f2937; margin-bottom: 16px;">New contact form submission</h2>
+    <table style="width: 100%; border-collapse: collapse;">
+        <tr><td style="padding: 6px 0; color: #6b7280; width: 90px;">From</td><td><strong>${escapeHtml(submission.name)}</strong> &lt;${escapeHtml(submission.email)}&gt;</td></tr>
+        <tr><td style="padding: 6px 0; color: #6b7280;">Subject</td><td>${escapeHtml(submission.subject)}</td></tr>
+    </table>
+    <hr style="border: none; border-top: 1px solid #e5e7eb; margin: 20px 0;">
+    <div style="white-space: pre-wrap;">${escapeHtml(submission.message)}</div>
+</body>
+</html>
+    `.trim();
+
+    const textContent = `New contact form submission\n\nFrom: ${submission.name} <${submission.email}>\nSubject: ${submission.subject}\n\n${submission.message}`;
+
+    try {
+        await sender.send({
+            from: FROM_ADDRESS,
+            to: adminAddress,
+            subject: `[Contact] ${submission.subject}`,
+            html: htmlContent,
+            text: textContent,
+        });
+        return true;
+    }
+    catch (error) {
+        console.error('Failed to send contact notification email:', error);
+        return false;
+    }
+}
+
 export async function hashToken(token: string): Promise<string> {
     const encoder = new TextEncoder();
     const data = encoder.encode(token);

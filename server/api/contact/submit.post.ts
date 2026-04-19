@@ -1,4 +1,5 @@
 import type { D1Database } from '@cloudflare/workers-types';
+import { sendContactNotificationEmail } from '../../utils/email';
 
 // Simple in-memory rate limiter (for production, consider Redis or D1-based storage)
 const rateLimitMap = new Map<string, number[]>();
@@ -104,6 +105,20 @@ export default defineEventHandler(async (event) => {
         `)
             .bind(messageId, name.trim(), email.trim(), subject.trim(), message.trim(), ipAddress, userAgent)
             .run();
+
+        const sendEmail = event.context.cloudflare?.env?.SEND_EMAIL as {
+            send(msg: { from: string; to: string; subject: string; text?: string; html?: string }): Promise<void>;
+        } | undefined;
+        const adminAddress = event.context.cloudflare?.env?.ADMIN_MAIL_ADDRESS as string | undefined;
+
+        if (sendEmail && adminAddress) {
+            await sendContactNotificationEmail(sendEmail, adminAddress, {
+                name: name.trim(),
+                email: email.trim(),
+                subject: subject.trim(),
+                message: message.trim(),
+            });
+        }
 
         return {
             success: true,
