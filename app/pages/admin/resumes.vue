@@ -143,6 +143,9 @@
                     <table class="w-full">
                         <thead class="bg-gray-50 border-b border-gray-200">
                             <tr>
+                                <th class="px-4 lg:px-6 py-3 text-start text-xs font-medium text-gray-500 uppercase tracking-wider w-[1%] whitespace-nowrap">
+                                    <span class="sr-only">{{ $t('admin.resumes.actions.view') }}</span>
+                                </th>
                                 <th class="px-4 lg:px-6 py-3 text-start text-xs font-medium text-gray-500 uppercase tracking-wider">
                                     {{ $t('admin.resumes.name') }}
                                 </th>
@@ -168,6 +171,16 @@
                                 v-for="resume in resumes"
                                 :key="resume.id"
                             >
+                                <td class="px-4 lg:px-6 py-4 whitespace-nowrap">
+                                    <Button
+                                        variant="outline"
+                                        size="sm"
+                                        @click="openPreview(resume)"
+                                    >
+                                        <Eye class="w-4 h-4 me-1" />
+                                        {{ $t('admin.resumes.actions.view') }}
+                                    </Button>
+                                </td>
                                 <td class="px-4 lg:px-6 py-4 text-sm font-medium text-gray-900 max-w-[200px] truncate">
                                     {{ resume.name || 'Untitled Resume' }}
                                 </td>
@@ -184,35 +197,25 @@
                                     {{ formatDateTime(resume.updated_at) }}
                                 </td>
                                 <td class="px-4 lg:px-6 py-4 whitespace-nowrap text-end text-sm font-medium">
-                                    <div class="flex items-center justify-end gap-2">
-                                        <Button
-                                            variant="outline"
-                                            size="sm"
-                                            @click="openPreview(resume)"
-                                        >
-                                            <Eye class="w-4 h-4 me-1" />
-                                            {{ $t('admin.resumes.actions.view') }}
-                                        </Button>
-                                        <DropdownMenu>
-                                            <DropdownMenuTrigger as-child>
-                                                <Button
-                                                    variant="ghost"
-                                                    size="sm"
-                                                >
-                                                    <MoreVertical class="w-4 h-4" />
-                                                </Button>
-                                            </DropdownMenuTrigger>
-                                            <DropdownMenuContent align="end">
-                                                <DropdownMenuItem
-                                                    class="text-red-600 focus:text-red-600"
-                                                    @click="confirmDelete(resume.id)"
-                                                >
-                                                    <Trash2 class="w-4 h-4 me-2" />
-                                                    {{ $t('common.delete') }}
-                                                </DropdownMenuItem>
-                                            </DropdownMenuContent>
-                                        </DropdownMenu>
-                                    </div>
+                                    <DropdownMenu>
+                                        <DropdownMenuTrigger as-child>
+                                            <Button
+                                                variant="ghost"
+                                                size="sm"
+                                            >
+                                                <MoreVertical class="w-4 h-4" />
+                                            </Button>
+                                        </DropdownMenuTrigger>
+                                        <DropdownMenuContent align="end">
+                                            <DropdownMenuItem
+                                                class="text-red-600 focus:text-red-600"
+                                                @click="confirmDelete(resume.id)"
+                                            >
+                                                <Trash2 class="w-4 h-4 me-2" />
+                                                {{ $t('common.delete') }}
+                                            </DropdownMenuItem>
+                                        </DropdownMenuContent>
+                                    </DropdownMenu>
                                 </td>
                             </tr>
                         </tbody>
