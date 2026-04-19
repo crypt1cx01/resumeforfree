@@ -116,6 +116,7 @@ export default defineNuxtConfig({
     },
 
     pwa: {
+        registerType: 'prompt',
         manifest: {
             name: 'Resume For Free',
             short_name: 'Resume For Free',
@@ -135,6 +136,10 @@ export default defineNuxtConfig({
         },
         workbox: {
             navigateFallback: '/',
+            cleanupOutdatedCaches: true,
+        },
+        client: {
+            periodicSyncForUpdates: 60,
         },
         devOptions: {
             enabled: false,

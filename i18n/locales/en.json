@@ -453,7 +453,10 @@
     "dataExported": "Data exported successfully",
     "settingsReset": "Settings reset to defaults",
     "autoSyncedToCloud": "Saved {count} resume to the cloud | Saved {count} resumes to the cloud",
-    "cloudLimitReached": "Cloud limit reached — {count} resume kept local | Cloud limit reached — {count} resumes kept local"
+    "cloudLimitReached": "Cloud limit reached — {count} resume kept local | Cloud limit reached — {count} resumes kept local",
+    "updateAvailable": "A new version is available",
+    "updateAvailableDescription": "Refresh to load the latest improvements.",
+    "updateRefresh": "Refresh"
   },
   "platforms": {
     "linkedin": "LinkedIn",
