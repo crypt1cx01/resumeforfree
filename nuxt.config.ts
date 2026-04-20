@@ -102,12 +102,12 @@ export default defineNuxtConfig({
         ],
         lazy: true,
         langDir: 'locales',
-        strategy: 'no_prefix',
+        strategy: 'prefix_except_default',
         baseUrl: 'https://resumeforfree.com',
         detectBrowserLanguage: {
             useCookie: true,
             cookieKey: 'i18n_redirected',
-            redirectOn: 'no prefix',
+            redirectOn: 'root',
         },
     },
 
@@ -147,8 +147,8 @@ export default defineNuxtConfig({
     },
 
     robots: {
-        disallow: ['/auth/', '/admin/', '/profile', '/_nuxt/'],
         allow: '/',
+        disallow: ['/api/', '/_nuxt/'],
     },
 
     seo: {
@@ -163,8 +163,9 @@ export default defineNuxtConfig({
     sitemap: {
         exclude: [
             '/auth/**',
-            '/admin/**',
             '/profile',
+            '/ar/auth/**',
+            '/ar/profile',
         ],
         defaults: {
             changefreq: 'weekly',

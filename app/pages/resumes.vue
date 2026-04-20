@@ -13,6 +13,7 @@ import { Button } from '~/components/ui/button';
 import { CheckCircle, Cloud, LogIn, UserPlus } from 'lucide-vue-next';
 
 const { t } = useI18n();
+const localePath = useLocalePath();
 const resumeStore = useResumeStore();
 const authStore = useAuthStore();
 const router = useRouter();
@@ -121,12 +122,12 @@ const handleCreateResume = async (name: string, language: string, navigateToBuil
         toast.success(t('resumes.toast.created').replace('{name}', resumeName));
     }
     if (navigateToBuilder) {
-        router.push('/builder');
+        router.push(localePath('/builder'));
     }
 };
 const editResume = (id: string) => {
     resumeStore.setActiveResume(id);
-    router.push('/builder');
+    router.push(localePath('/builder'));
 };
 const showCopyResumeModal = (id: string) => {
     const resume = resumeStore.resumesList.find(r => r.id === id);
@@ -144,7 +145,7 @@ const handleCopyResume = (name: string, navigateToBuilder: boolean) => {
             showCopyModal.value = false;
             resumeToCopy.value = null;
             if (navigateToBuilder) {
-                router.push('/builder');
+                router.push(localePath('/builder'));
             }
         }
     }
@@ -405,7 +406,7 @@ useHead({
                                 <Button
                                     size="sm"
                                     class="bg-blue-600 hover:bg-blue-700"
-                                    @click="$router.push('/auth/register')"
+                                    @click="router.push(localePath('/auth/register'))"
                                 >
                                     <UserPlus class="w-4 h-4 mr-1" />
                                     {{ $t('resumes.banner.registerFree') }}
@@ -414,7 +415,7 @@ useHead({
                                     size="sm"
                                     variant="outline"
                                     class="border-blue-300 text-blue-700 hover:bg-blue-100"
-                                    @click="$router.push('/auth/login')"
+                                    @click="router.push(localePath('/auth/login'))"
                                 >
                                     <LogIn class="w-4 h-4 mr-1" />
                                     {{ $t('resumes.banner.login') }}

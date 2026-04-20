@@ -22,6 +22,7 @@ import SyncIndicator from '~/components/elements/SyncIndicator.vue';
 import LanguageMismatchAlert from '~/components/elements/LanguageMismatchAlert.vue';
 
 const { t, loadLocaleMessages } = useI18n({ useScope: 'global' });
+const localePath = useLocalePath();
 
 useHead({
     title: t('builder.pageTitle'),
@@ -199,7 +200,7 @@ const handleRegister = (dontShowAgain: boolean) => {
         markModalSeen();
     }
     useCloudSyncIntent().markIntent();
-    navigateTo('/auth/register');
+    navigateTo(localePath('/auth/register'));
 };
 const handleLogin = (dontShowAgain: boolean) => {
     showFirstTimeModal.value = false;
@@ -207,7 +208,7 @@ const handleLogin = (dontShowAgain: boolean) => {
         markModalSeen();
     }
     useCloudSyncIntent().markIntent();
-    navigateTo('/auth/login');
+    navigateTo(localePath('/auth/login'));
 };
 
 const handleCloudSyncModalClose = () => {

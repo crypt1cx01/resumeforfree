@@ -128,6 +128,7 @@ import { Loader2 } from 'lucide-vue-next';
 import TurnstileWidget from '~/components/elements/TurnstileWidget.vue';
 
 const { t } = useI18n();
+const localePath = useLocalePath();
 const authStore = useAuthStore();
 const router = useRouter();
 const route = useRoute();
@@ -157,7 +158,7 @@ const handleLogin = async () => {
     error.value = '';
     const result = await authStore.login({ email: email.value, password: password.value, turnstileToken: turnstileToken.value });
     if (result.success) {
-        router.push('/resumes');
+        router.push(localePath('/resumes'));
     }
     else {
         error.value = result.error || t('auth.loginFailed');

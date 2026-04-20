@@ -7,12 +7,19 @@ import { Separator } from '~/components/ui/separator';
 import { User, Lock, Eye, EyeOff } from 'lucide-vue-next';
 
 const { t } = useI18n();
+const localePath = useLocalePath();
 const authStore = useAuthStore();
 
 // Redirect if not logged in
 if (!authStore.isLoggedIn) {
-    await navigateTo('/auth/login');
+    await navigateTo(localePath('/auth/login'));
 }
+
+useHead({
+    meta: [
+        { name: 'robots', content: 'noindex, follow' },
+    ],
+});
 
 const activeSection = ref<'personal' | 'password'>('personal');
 const isChangingPassword = ref(false);

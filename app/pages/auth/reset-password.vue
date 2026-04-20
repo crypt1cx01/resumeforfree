@@ -106,6 +106,7 @@ import { Label } from '~/components/ui/label';
 import { Loader2, CheckCircle, AlertCircle } from 'lucide-vue-next';
 
 const { t } = useI18n();
+const localePath = useLocalePath();
 const route = useRoute();
 const router = useRouter();
 
@@ -148,7 +149,7 @@ const handleSubmit = async () => {
             success.value = true;
             // Redirect to login after 2 seconds
             setTimeout(() => {
-                router.push('/auth/login');
+                router.push(localePath('/auth/login'));
             }, 2000);
         }
     }

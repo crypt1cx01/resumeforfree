@@ -137,7 +137,7 @@
                             {{ $t('contact.success.message') }}
                         </p>
                         <Button
-                            @click="navigateTo('/resumes')"
+                            @click="navigateTo(localePath('/resumes'))"
                         >
                             {{ $t('contact.success.keepBuilding') }}
                         </Button>
@@ -171,6 +171,7 @@ import { Button } from '~/components/ui/button';
 import TurnstileWidget from '~/components/elements/TurnstileWidget.vue';
 
 const { t } = useI18n();
+const localePath = useLocalePath();
 
 const formData = ref({
     name: '',

@@ -151,6 +151,7 @@ import { Loader2 } from 'lucide-vue-next';
 import TurnstileWidget from '~/components/elements/TurnstileWidget.vue';
 
 const { t } = useI18n();
+const localePath = useLocalePath();
 const authStore = useAuthStore();
 const router = useRouter();
 const name = ref('');
@@ -193,7 +194,7 @@ const handleRegister = async () => {
     if (result.success) {
         success.value = t('auth.accountCreatedSuccess');
         setTimeout(() => {
-            router.push('/resumes');
+            router.push(localePath('/resumes'));
         }, 1500);
     }
     else {
