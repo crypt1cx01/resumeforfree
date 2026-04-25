@@ -22,7 +22,7 @@ useHead({
                     Terms and Conditions
                 </h1>
                 <p class="text-lg text-gray-600">
-                    Last updated: {{ new Date().toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' }) }}
+                    Last updated: April 25, 2026
                 </p>
             </div>
 
@@ -93,7 +93,7 @@ useHead({
 
                 <h2>8. Changes to Terms</h2>
                 <p>
-                    These terms may be updated from time to time to reflect changes in the service or legal requirements. Users will be notified of significant changes, and continued use of the service constitutes acceptance of the updated terms.
+                    These terms may be updated from time to time to reflect changes in the service or legal requirements. Because Resume For Free is offered at no cost with a limited operational budget, we are unable to email every user when the terms change. Please check this page periodically for the latest version — the "last updated" date at the top will always reflect the most recent revision. Continued use of the service after an update constitutes acceptance of the revised terms.
                 </p>
 
                 <h2>9. Contact Information</h2>
