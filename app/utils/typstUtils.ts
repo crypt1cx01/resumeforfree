@@ -16,10 +16,6 @@ export const convertLinkWithColor = (url: string, text: string, color = 'blue'):
     if (!url || !text) return '';
     return `#link("${url}")[#text(fill: ${color}, "${escapeTypstString(text)}")]`;
 };
-export const convertExternalLinkIcon = (url: string): string => {
-    if (!url) return '';
-    return `#link("${url}")[#text(size: 10pt, weight: "semibold", fill: blue)[↗]]`;
-};
 export const convertUnderlinedLink = (url: string, text: string): string => {
     if (!url || !text) return '';
     return `#link("${url}")[#underline[#text(fill: blue, "${escapeTypstString(text)}")]]`;
@@ -46,7 +42,7 @@ export const formatDateToMonthYear = (date: string): string => {
     }
     return date;
 };
-export const convertDateRange = ({ startDate, endDate, isPresent, t }: DateRangeInput): string => {
+export const formatDateRangeText = ({ startDate, endDate, isPresent, t }: DateRangeInput): string => {
     if (!startDate && !endDate && !isPresent) return '';
     const presentText = t ? t('template.present') : 'Present';
     let dateText = '';
@@ -59,6 +55,11 @@ export const convertDateRange = ({ startDate, endDate, isPresent, t }: DateRange
     if (isPresent) {
         dateText += dateText ? ` - ${presentText}` : presentText;
     }
+    return dateText;
+};
+export const convertDateRange = (input: DateRangeInput): string => {
+    const dateText = formatDateRangeText(input);
+    if (!dateText) return '';
     return `#text(fill: gray, "${escapeTypstString(dateText)}")`;
 };
 export const convertList = (items: string[], indent = '1em'): string => {

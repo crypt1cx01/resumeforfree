@@ -1,6 +1,6 @@
 import type { Certificate, Education, Experience, Internship, Language, Project, ResumeData, SkillItem, Volunteering } from '~/types/resume';
 import type { SectionContent, TranslateFunction } from '~/types/template';
-import { convertDateRange, convertEmail, convertExternalLinkIcon, convertLink, convertUnderlinedLink } from './typstUtils';
+import { convertDateRange, convertEmail, convertLink, convertUnderlinedLink, formatDateRangeText } from './typstUtils';
 import { escapeTypstText } from './stringUtils';
 
 const buildPositionAtCompanyContent = (
@@ -46,14 +46,15 @@ export const generateExperienceContent = (experiences: Experience[], t?: Transla
             at,
             separator,
         );
-        const dateRange = convertDateRange({ startDate: experience.startDate, endDate: experience.endDate, isPresent: experience.isPresent, t });
+        const dateInput = { startDate: experience.startDate, endDate: experience.endDate, isPresent: experience.isPresent, t };
         const achievements = experience.achievements
             .filter(achievement => achievement.text && achievement.text.trim() !== '')
             .map(achievement => achievement.text);
         return {
             title: '',
             titleContent,
-            date: dateRange,
+            date: convertDateRange(dateInput),
+            dateText: formatDateRangeText(dateInput),
             achievements,
         };
     });
@@ -70,14 +71,15 @@ export const generateInternshipsContent = (internships: Internship[], t?: Transl
             at,
             separator,
         );
-        const dateRange = convertDateRange({ startDate: internship.startDate, endDate: internship.endDate, isPresent: internship.isPresent, t });
+        const dateInput = { startDate: internship.startDate, endDate: internship.endDate, isPresent: internship.isPresent, t };
         const achievements = internship.achievements
             .filter(achievement => achievement.text && achievement.text.trim() !== '')
             .map(achievement => achievement.text);
         return {
             title: '',
             titleContent,
-            date: dateRange,
+            date: convertDateRange(dateInput),
+            dateText: formatDateRangeText(dateInput),
             achievements,
         };
     });
@@ -90,7 +92,7 @@ export const generateEducationContent = (education: Education[], t?: TranslateFu
         const title = edu.degree && edu.institution
             ? `${edu.degree}${at}${edu.institution}${edu.location ? separator + edu.location : ''}`
             : `${edu.degree || edu.institution}${edu.location ? separator + edu.location : ''}`;
-        const dateRange = convertDateRange({ startDate: edu.startDate, endDate: edu.endDate, isPresent: edu.isPresent || false, t });
+        const dateInput = { startDate: edu.startDate, endDate: edu.endDate, isPresent: edu.isPresent || false, t };
         let additionalInfo = '';
         if (edu.graduationScore && edu.graduationScore.trim()) {
             additionalInfo += `*${gradeLabel}* ${escapeTypstText(edu.graduationScore)}`;
@@ -101,7 +103,8 @@ export const generateEducationContent = (education: Education[], t?: TranslateFu
         }
         return {
             title,
-            date: dateRange,
+            date: convertDateRange(dateInput),
+            dateText: formatDateRangeText(dateInput),
             additionalInfo: additionalInfo || undefined,
         };
     });
@@ -110,14 +113,23 @@ export const generateVolunteeringContent = (volunteering: Volunteering[], t?: Tr
     return volunteering.map((vol) => {
         const at = t ? t('template.at') : ' at ';
         const separator = t ? t('template.separator') : ', ';
-        const title = `${vol.position}${vol.organization ? at + vol.organization : ''}${vol.location ? separator + vol.location : ''}`;
-        const dateRange = convertDateRange({ startDate: vol.startDate, endDate: vol.endDate, isPresent: vol.isPresent, t });
+        const titleContent = buildPositionAtCompanyContent(
+            vol.position,
+            vol.organization,
+            vol.organizationUrl,
+            vol.location,
+            at,
+            separator,
+        );
+        const dateInput = { startDate: vol.startDate, endDate: vol.endDate, isPresent: vol.isPresent, t };
         const achievements = vol.achievements
             .filter(achievement => achievement.text && achievement.text.trim() !== '')
             .map(achievement => achievement.text);
         return {
-            title,
-            date: dateRange,
+            title: '',
+            titleContent,
+            date: convertDateRange(dateInput),
+            dateText: formatDateRangeText(dateInput),
             achievements,
         };
     });
@@ -144,12 +156,12 @@ export const generateProjectsContent = (projects: Project[], t?: TranslateFuncti
             const titleContent = [name, ...linkMarkups].filter(Boolean).join(' • ');
             const desc = project.description.trim() ? escapeTypstText(project.description.trim()) : '';
 
-            const dateRange = convertDateRange({
+            const dateInput = {
                 startDate: project.startDate,
                 endDate: project.endDate,
                 isPresent: project.isPresent,
                 t,
-            });
+            };
             const achievements = (project.achievements || [])
                 .filter(a => a.text && a.text.trim() !== '')
                 .map(a => a.text);
@@ -157,7 +169,8 @@ export const generateProjectsContent = (projects: Project[], t?: TranslateFuncti
             return {
                 title: '',
                 titleContent: titleContent || undefined,
-                date: dateRange,
+                date: convertDateRange(dateInput),
+                dateText: formatDateRangeText(dateInput),
                 content: desc || undefined,
                 achievements,
             };
@@ -236,18 +249,23 @@ export const generateSocialLinksContent = (data: ResumeData): SectionContent[] =
         };
     });
 };
-export const generateCertificatesContent = (certificates: Certificate[]): SectionContent[] => {
+export const generateCertificatesContent = (certificates: Certificate[], t?: TranslateFunction): SectionContent[] => {
+    const linkLabel = t ? t('common.link') : 'Link';
     return certificates
         .filter(cert => cert.title.trim() || cert.issuer.trim())
         .map((cert) => {
             const title = `${cert.title}${cert.issuer ? ' from ' + cert.issuer : ''}`;
-            const dateRange = cert.date ? convertDateRange({ startDate: cert.date }) : '';
-            const certLink = cert.url?.trim() ? convertExternalLinkIcon(cert.url) : '';
+            const certLink = cert.url?.trim() ? convertLink(cert.url, linkLabel) : '';
+            const titleContent = certLink
+                ? `${escapeTypstText(title)} · ${certLink}`
+                : undefined;
+            const dateInput = { startDate: cert.date };
             const description = cert.description?.trim() ? escapeTypstText(cert.description) : '';
             return {
                 title,
-                date: dateRange,
-                content: certLink,
+                titleContent,
+                date: cert.date ? convertDateRange(dateInput) : '',
+                dateText: cert.date ? formatDateRangeText(dateInput) : '',
                 additionalInfo: description || undefined,
             };
         });

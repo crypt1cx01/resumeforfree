@@ -41,7 +41,7 @@
                 <Input
                     id="location"
                     :model-value="resumeStore.resumeData.location"
-                    :placeholder="t('common.location')"
+                    :placeholder="t('common.locationPlaceholder')"
                     @update:model-value="(value) => resumeStore.updateField('location', value)"
                 />
             </div>
@@ -73,6 +73,7 @@
         <div class="mt-6 space-y-4">
             <EditableHeader
                 :value="profileHeader"
+                section-key="profile"
                 @update="(value) => setSectionHeader('profile', value)"
             />
             <div class="space-y-2">
@@ -89,6 +90,7 @@
             <div class="flex justify-between items-center">
                 <EditableHeader
                     :value="socialLinksHeader"
+                    section-key="socialLinks"
                     @update="(value) => setSectionHeader('socialLinks', value)"
                 />
                 <Button
@@ -116,7 +118,7 @@
                         <div class="w-32 md:w-40">
                             <select
                                 :value="link.platform"
-                                class="w-full px-3 py-2 border rounded-md border-gray-300 focus:border-blue-500 focus:ring-blue-500 text-sm"
+                                class="w-full px-3 py-2 border rounded-md border-gray-300 focus:border-green focus:ring-green-50 focus:ring-[3px] text-sm"
                                 @change="(e) => resumeStore.updateSocialLink(linkIndex, 'platform', (e.target as HTMLSelectElement).value)"
                             >
                                 <option
