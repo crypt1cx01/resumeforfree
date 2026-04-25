@@ -22,10 +22,10 @@ const closeMobileMenu = () => {
     isMobileMenuOpen.value = false;
 };
 
-const navLinks = [
+const navLinks = computed(() => [
     { label: t('navigation.resumes', 'Your resumes'), path: '/resumes' },
     { label: t('navigation.builder'), path: '/builder' },
-] as const;
+]);
 
 const isActive = (path: string) => route.path === localePath(path) || route.path.startsWith(localePath(path) + '/');
 
@@ -235,7 +235,7 @@ watch(
 
         <!-- ─── Footer ────────────────────────────────────────────────────── -->
         <footer
-            v-if="$route.path !== '/builder'"
+            v-if="route.path !== localePath('/builder')"
             class="border-t border-rule bg-white pt-14 pb-7"
         >
             <div class="max-w-[1180px] mx-auto px-6">
