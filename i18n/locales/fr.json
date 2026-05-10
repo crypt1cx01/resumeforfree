@@ -430,8 +430,8 @@
         "remove": "Retirer",
         "note": "Par défaut, les photos sont affichées avec des coins arrondis.",
         "roundedToggle": "Photo arrondie",
-        "invalidType": "Le fichier doit être un JPG, PNG ou WebP",
-        "tooLarge": "Le fichier doit faire moins de 2 Mo",
+        "invalidType": "Le fichier doit être un JPG ou PNG",
+        "tooLarge": "Le fichier doit faire moins de 512 Ko",
         "cropTitle": "Recadrez votre photo"
       }
     },

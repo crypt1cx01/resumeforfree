@@ -430,8 +430,8 @@
         "remove": "Kaldır",
         "note": "Fotoğraflar varsayılan olarak yuvarlatılmış köşelerle oluşturulur.",
         "roundedToggle": "Yuvarlak fotoğraf",
-        "invalidType": "Dosya JPG, PNG veya WebP olmalıdır",
-        "tooLarge": "Dosya 2 MB'dan küçük olmalıdır",
+        "invalidType": "Dosya JPG veya PNG olmalıdır",
+        "tooLarge": "Dosya 512 KB'dan küçük olmalıdır",
         "cropTitle": "Fotoğrafınızı kırpın"
       }
     },

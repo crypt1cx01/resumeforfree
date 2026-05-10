@@ -429,8 +429,8 @@
         "upload": "Upload Photo",
         "remove": "Remove",
         "roundedToggle": "Round photo",
-        "invalidType": "File must be JPG, PNG, or WebP",
-        "tooLarge": "File must be under 2 MB",
+        "invalidType": "File must be JPG or PNG",
+        "tooLarge": "File must be under 512 KB",
         "cropTitle": "Crop your photo"
       }
     },

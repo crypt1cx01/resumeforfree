@@ -2,8 +2,8 @@ import jwt from '@tsndr/cloudflare-worker-jwt';
 import type { D1Database, R2Bucket } from '@cloudflare/workers-types';
 
 const JWT_SECRET = process.env.JWT_SECRET;
-const ALLOWED_MIMES = new Set(['image/jpeg', 'image/png', 'image/webp']);
-const MAX_BYTES = 2 * 1024 * 1024;
+const ALLOWED_MIMES = new Set(['image/jpeg', 'image/png']);
+const MAX_BYTES = 512 * 1024;
 
 export default defineEventHandler(async (event) => {
     const token = getCookie(event, 'auth-token');
@@ -43,12 +43,15 @@ export default defineEventHandler(async (event) => {
     }
     const mime = fileEntry.type || '';
     if (!ALLOWED_MIMES.has(mime)) {
-        throw createError({ statusCode: 415, statusMessage: 'File must be JPG, PNG, or WebP' });
+        throw createError({ statusCode: 415, statusMessage: 'File must be JPG or PNG' });
     }
     if (fileEntry.size > MAX_BYTES) {
-        throw createError({ statusCode: 413, statusMessage: 'File must be under 2 MB' });
+        throw createError({ statusCode: 413, statusMessage: 'File must be under 512 KB' });
     }
     const bytes = new Uint8Array(await fileEntry.arrayBuffer());
+    if (bytes.byteLength > MAX_BYTES) {
+        throw createError({ statusCode: 413, statusMessage: 'File must be under 512 KB' });
+    }
     const key = `photos/${userId}/${resumeId}`;
     await photos.put(key, bytes, { httpMetadata: { contentType: mime } });
 

@@ -1,7 +1,7 @@
 import type { LocalResumePhoto, ResumePhoto } from '~/types/resume';
 
-const ALLOWED_MIMES = new Set(['image/jpeg', 'image/png', 'image/webp']);
-const MAX_BYTES = 2 * 1024 * 1024;
+const ALLOWED_MIMES = new Set(['image/jpeg', 'image/png']);
+const MAX_BYTES = 512 * 1024;
 const MAX_DIMENSION = 800;
 
 export interface CropResult {
