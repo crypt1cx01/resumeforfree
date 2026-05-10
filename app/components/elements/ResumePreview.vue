@@ -153,7 +153,7 @@
                     <div class="bg-gray-100 rounded-lg overflow-hidden h-full">
                         <div class="bg-white h-full min-h-[calc(100vh-200px)] flex flex-col">
                             <div
-                                v-if="isLoading"
+                                v-if="isLoading && !previewContent"
                                 class="flex items-center justify-center flex-1"
                             >
                                 <div class="text-center">
@@ -169,7 +169,7 @@
                                 </div>
                             </div>
                             <div
-                                v-else-if="error"
+                                v-else-if="error && !previewContent"
                                 class="flex items-center justify-center flex-1"
                             >
                                 <div class="text-center">

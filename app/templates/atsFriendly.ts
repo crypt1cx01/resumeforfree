@@ -33,6 +33,7 @@ const ATS_LAYOUT_CONFIG: TemplateRenderConfig = {
         spacing: 'joined',
         itemSpacing: '0.8em',
         joinSeparator: '\n\n',
+        datesInline: true,
     },
     socialLinks: {
         orientation: 'horizontal',

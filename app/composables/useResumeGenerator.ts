@@ -1,7 +1,14 @@
 import { getTemplate } from '~/templates';
-import type { Resume, ResumeData } from '~/types/resume';
+import type { Resume, ResumeData, ResumePhoto } from '~/types/resume';
 import { typstLoader } from '~/utils/typstLoader';
 import { loadPhotoBytes, PHOTO_VFS_PATH } from '~/utils/photoLoader';
+
+let lastSyncedPhotoKey: string | null = null;
+
+const photoIdentity = (photo: ResumePhoto | undefined): string | null => {
+    if (!photo) return null;
+    return photo.source === 'local' ? `local:${photo.dataUrl.length}:${photo.dataUrl.slice(-32)}` : `r2:${photo.url}`;
+};
 
 export const useResumeGenerator = () => {
     const { isReady: typstReady, isLoading: typstLoading } = useTypstLoader();
@@ -9,17 +16,23 @@ export const useResumeGenerator = () => {
 
     const syncPhotoToVfs = async (resume: Resume): Promise<void> => {
         const photo = resume.data.photo;
+        const key = photoIdentity(photo);
+        if (key === lastSyncedPhotoKey) return;
+
         if (!photo) {
             await typstLoader.unregisterPhoto(PHOTO_VFS_PATH);
+            lastSyncedPhotoKey = null;
             return;
         }
         try {
             const bytes = await loadPhotoBytes(photo);
             await typstLoader.registerPhoto(PHOTO_VFS_PATH, bytes);
+            lastSyncedPhotoKey = key;
         }
         catch (error) {
             console.error('Failed to register resume photo with Typst:', error);
             await typstLoader.unregisterPhoto(PHOTO_VFS_PATH);
+            lastSyncedPhotoKey = null;
         }
     };
 

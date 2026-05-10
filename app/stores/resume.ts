@@ -40,7 +40,9 @@ export const useResumeStore = defineStore('resume', {
         isSyncing: false,
         userId: null,
     }),
-    persist: true,
+    persist: {
+        pick: ['resumes', 'activeResumeId', 'nextId', 'userId'],
+    },
     getters: {
         activeResume: (state): Resume | null => {
             if (!state.activeResumeId) return null;
@@ -1029,6 +1031,7 @@ export const useResumeStore = defineStore('resume', {
                 await this.reconcileServerResumes(serverResumes);
             }
             catch (error: unknown) {
+                if (!useAuthStore().isLoggedIn) return;
                 console.error('Failed to fetch server resumes:', error);
                 this.error = (error as Error).message || 'Failed to fetch resumes from server';
             }

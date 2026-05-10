@@ -3,6 +3,10 @@ import type { ChangePasswordRequest, LoginRequest, RegisterRequest, ResumeCreate
 export const useApi = () => {
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const handleError = (error: any) => {
+        const status = error?.statusCode || error?.response?.status;
+        if (status === 401) {
+            useAuthStore().clearAuth();
+        }
         console.error('API Error:', error);
         const message = error?.data?.message || error?.statusMessage || error?.message || 'An error occurred';
         throw new Error(message);
