@@ -85,8 +85,7 @@ export const useResumePhoto = () => {
 
     const removePhoto = async (resumeId: string): Promise<void> => {
         const resume = resumeStore.resumes[resumeId];
-        const photo = resume?.data?.photo;
-        if (photo?.source === 'r2' && resume.serverId) {
+        if (resume?.serverId) {
             try {
                 await api.resumes.deletePhoto(resume.serverId);
             }

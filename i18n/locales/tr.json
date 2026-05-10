@@ -432,7 +432,8 @@
         "roundedToggle": "Yuvarlak fotoğraf",
         "invalidType": "Dosya JPG veya PNG olmalıdır",
         "tooLarge": "Dosya 512 KB'dan küçük olmalıdır",
-        "cropTitle": "Fotoğrafınızı kırpın"
+        "cropTitle": "Fotoğrafınızı kırpın",
+        "constraints": "JPG veya PNG, en fazla 512 KB"
       }
     },
     "experience": {

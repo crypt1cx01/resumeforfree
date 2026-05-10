@@ -431,7 +431,8 @@
         "roundedToggle": "Round photo",
         "invalidType": "File must be JPG or PNG",
         "tooLarge": "File must be under 512 KB",
-        "cropTitle": "Crop your photo"
+        "cropTitle": "Crop your photo",
+        "constraints": "JPG or PNG, max 512 KB"
       }
     },
     "experience": {

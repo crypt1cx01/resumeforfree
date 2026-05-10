@@ -39,6 +39,9 @@
                         {{ t('forms.personalInfo.photo.remove') }}
                     </Button>
                 </div>
+                <p class="text-xs text-gray-500">
+                    {{ t('forms.personalInfo.photo.constraints') }}
+                </p>
                 <div class="flex items-center gap-2 pt-1">
                     <Switch
                         id="photo-shape-switch"

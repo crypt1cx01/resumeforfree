@@ -431,7 +431,8 @@
         "roundedToggle": "صورة دائرية",
         "invalidType": "يجب أن يكون الملف من نوع JPG أو PNG",
         "tooLarge": "يجب أن يكون حجم الملف أقل من 512 كيلوبايت",
-        "cropTitle": "اقتصاص الصورة"
+        "cropTitle": "اقتصاص الصورة",
+        "constraints": "JPG أو PNG، بحد أقصى 512 كيلوبايت"
       }
     },
     "experience": {

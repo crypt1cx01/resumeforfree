@@ -432,7 +432,8 @@
         "roundedToggle": "Photo arrondie",
         "invalidType": "Le fichier doit être un JPG ou PNG",
         "tooLarge": "Le fichier doit faire moins de 512 Ko",
-        "cropTitle": "Recadrez votre photo"
+        "cropTitle": "Recadrez votre photo",
+        "constraints": "JPG ou PNG, max 512 Ko"
       }
     },
     "experience": {
