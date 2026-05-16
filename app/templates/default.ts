@@ -86,7 +86,7 @@ const parse = ({ data, font, locale, t, fontSize, photoShape }: TemplateParseInp
         .map(section => allSections[section]())
         .filter(content => content.trim() !== '');
     const photoBlock = renderProfilePhoto(data, context);
-    const photoWithSpacing = photoBlock ? `#block(below: 1em)[${photoBlock}]` : '';
+    const photoWithSpacing = photoBlock ? `#block(below: 1em)[#align(center)[${photoBlock}]]` : '';
     const staticRightContent = [
         photoWithSpacing,
         allSections['contact'](),

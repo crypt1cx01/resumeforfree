@@ -7,7 +7,7 @@ import { getSharedSectionRenderers, renderProfilePhoto } from '~/utils/sectionRe
 import { RendererContext } from '~/utils/rendererContext';
 import { isRtlLocale } from '~/composables/useLocale';
 
-const renderHeaderLeftColumn = (data: ResumeData, fontSize: number): string[] => {
+const renderHeaderRows = (data: ResumeData, fontSize: number): string[] => {
     const rows: string[] = [];
     const fullName = `${escapeTypstText(data?.firstName || '')} ${escapeTypstText(data?.lastName || '')}`.trim();
     const position = escapeTypstText(data?.position || '');
@@ -15,6 +15,15 @@ const renderHeaderLeftColumn = (data: ResumeData, fontSize: number): string[] =>
     if (position) {
         rows.push(`#block(above: 0.8em)[#text(size: ${fontSize + 2}pt)[${position}]]`);
     }
+
+    const contactParts: string[] = [];
+    if (data?.email) contactParts.push(convertEmail(data.email));
+    if (data?.phone) contactParts.push(`#text(dir: ltr)[${escapeTypstText(data.phone)}]`);
+    if (data?.location) contactParts.push(escapeTypstText(data.location));
+    if (contactParts.length > 0) {
+        rows.push(`#block(above: 0.8em)[#text(size: ${fontSize - 1}pt)[${contactParts.join(' • ')}]]`);
+    }
+
     const socialLinks = (data?.socialLinks || [])
         .filter(link => link.platform && link.url && link.url.trim() !== '')
         .map((link) => {
@@ -38,65 +47,29 @@ const renderHeaderLeftColumn = (data: ResumeData, fontSize: number): string[] =>
             return convertLink(link.url, linkText);
         });
     if (socialLinks.length > 0) {
-        const linksSpacing = rows.length > 0 ? '0.8em' : '0em';
-        const linksContent = socialLinks.join(' • ');
-        rows.push(`#block(above: ${linksSpacing})[#text(size: ${fontSize - 1}pt)[${linksContent}]]`);
+        rows.push(`#block(above: 0.8em)[#text(size: ${fontSize - 1}pt)[${socialLinks.join(' • ')}]]`);
     }
-    return rows;
-};
-const renderHeaderRightColumn = (data: ResumeData, fontSize: number): string[] => {
-    const rows: string[] = [];
-    if (data?.email) {
-        const email = convertEmail(data.email);
-        rows.push(`#block(above: 0em)[#text(size: ${fontSize - 1}pt)[${email}]]`);
-    }
-    if (data?.phone) {
-        const phone = escapeTypstText(data.phone);
-        const phoneSpacing = rows.length > 0 ? '0.8em' : '0em';
-        rows.push(`#block(above: ${phoneSpacing})[#text(size: ${fontSize - 1}pt, dir: ltr)[${phone}]]`);
-    }
-    if (data?.location) {
-        const location = escapeTypstText(data.location);
-        const locationSpacing = rows.length > 0 ? '0.8em' : '0em';
-        rows.push(`#block(above: ${locationSpacing})[#text(size: ${fontSize - 1}pt)[${location}]]`);
-    }
-
     return rows;
 };
 const convertResumeHeader = (data: ResumeData, context: RendererContext, fontSize: number, isRtl = false) => {
-    const leftColumnRows = renderHeaderLeftColumn(data, fontSize);
-    const rightColumnRows = renderHeaderRightColumn(data, fontSize);
+    const headerRows = renderHeaderRows(data, fontSize);
     const photo = renderProfilePhoto(data, context);
     const startAlign = isRtl ? 'right' : 'left';
     const endAlign = isRtl ? 'left' : 'right';
-    const headerParts: string[] = [];
-    headerParts.push('#grid(');
-    if (photo) {
-        headerParts.push('    columns: (6fr, 4fr, auto),');
-        headerParts.push('    column-gutter: 16pt,');
-        headerParts.push(`    align: (${startAlign}, ${startAlign}, ${endAlign} + horizon),`);
-    }
-    else {
-        headerParts.push('    columns: (6fr, 4fr),');
-        headerParts.push('    column-gutter: 20pt,');
-        headerParts.push(`    align: (${startAlign}, ${startAlign}),`);
-    }
-    headerParts.push('    [');
-    leftColumnRows.forEach((row) => {
-        headerParts.push(`        ${row}`);
-    });
-    headerParts.push('    ],');
-    headerParts.push('    [');
-    rightColumnRows.forEach((row) => {
-        headerParts.push(`        ${row}`);
-    });
-    headerParts.push(photo ? '    ],' : '    ]');
-    if (photo) {
-        headerParts.push(`    [${photo}]`);
-    }
-    headerParts.push(')');
-    headerParts.push('#block(above: 1em, below: 1em)[#line(length: 100%, stroke: 1pt + black)]');
-    return headerParts.join('\n');
+    const textBlock = headerRows.join('\n');
+
+    const body = photo
+        ? `#grid(
+    columns: (1fr, auto),
+    column-gutter: 16pt,
+    align: (${startAlign}, ${endAlign} + horizon),
+    [${textBlock}],
+    [${photo}],
+)`
+        : textBlock;
+
+    return `${body}
+#block(above: 1em, below: 1em)[#line(length: 100%, stroke: 1pt + black)]`;
 };
 const parse = ({ data, font, locale, t, fontSize, photoShape }: TemplateParseInput): string => {
     const isRtl = isRtlLocale(locale);
