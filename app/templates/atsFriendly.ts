@@ -1,7 +1,7 @@
 import type { ResumeData, SectionHeaders, SectionOrder } from '~/types/resume';
 import type { Template, TemplateParseInput, TemplateRenderConfig } from '~/types/template';
 import { escapeTypstText } from '~/utils/stringUtils';
-import { convertEmail, SECTION_SPACING } from '~/utils/typstUtils';
+import { convertEmail, convertLink, SECTION_SPACING } from '~/utils/typstUtils';
 import { RendererContext } from '~/utils/rendererContext';
 import { isRtlLocale } from '~/composables/useLocale';
 import { SECTION_TRANSLATION_MAP } from '~/composables/useSectionHeader';
@@ -79,6 +79,25 @@ function renderTopHeader(data: ResumeData, context: RendererContext, fontSize: n
     if (data?.email) contactParts.push(convertEmail(data.email));
     if (data?.phone) contactParts.push(`#text(dir: ltr)[${escapeTypstText(data.phone)}]`);
 
+    const platformLabels: Record<string, string> = {
+        linkedin: 'LinkedIn',
+        github: 'GitHub',
+        twitter: 'Twitter',
+        portfolio: 'Portfolio',
+        dribbble: 'Dribbble',
+        medium: 'Medium',
+        devto: 'Dev.to',
+        personal: 'Personal',
+    };
+    const socialParts: string[] = (data?.socialLinks || [])
+        .filter(link => link.platform && link.url && link.url.trim() !== '')
+        .map((link) => {
+            const label = link.platform === 'other' && link.customLabel
+                ? link.customLabel
+                : (platformLabels[link.platform] || link.platform);
+            return convertLink(link.url, label);
+        });
+
     const textBlocks: string[] = [];
     if (fullName) {
         textBlocks.push(`#block(above: 0em, below: 0.8em)[#text(size: ${fontSize + 14}pt, weight: "bold", fill: ${ATS_BLUE})[${fullName}]]`);
@@ -87,7 +106,11 @@ function renderTopHeader(data: ResumeData, context: RendererContext, fontSize: n
         textBlocks.push(`#block(above: 0em, below: 1em)[#text(size: ${fontSize + 4}pt, weight: "bold")[${position}]]`);
     }
     if (contactParts.length > 0) {
-        textBlocks.push(`#block(above: 0em, below: 1.4em)[#text(size: ${fontSize}pt)[${contactParts.join(' | ')}]]`);
+        const below = socialParts.length > 0 ? '0.6em' : '1.4em';
+        textBlocks.push(`#block(above: 0em, below: ${below})[#text(size: ${fontSize}pt)[${contactParts.join(' | ')}]]`);
+    }
+    if (socialParts.length > 0) {
+        textBlocks.push(`#block(above: 0em, below: 1.4em)[#text(size: ${fontSize}pt)[${socialParts.join(' | ')}]]`);
     }
     const textColumn = textBlocks.join('\n');
 
