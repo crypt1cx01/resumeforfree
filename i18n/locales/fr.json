@@ -567,7 +567,8 @@
     "at": " chez ",
     "present": "Présent",
     "grade": "Note :",
-    "separator": ", "
+    "separator": ", ",
+    "from": " de "
   },
   "auth": {
     "signIn": "Se Connecter",
@@ -849,5 +850,13 @@
       "title": "Contactez-Nous - Obtenez de l'Aide avec Resume For Free | Support",
       "description": "Besoin d'aide avec notre créateur de CV gratuit ? Contactez notre équipe de support pour obtenir de l'aide concernant la création de CV professionnels. Service client rapide et amical."
     }
+  },
+  "proficiency": {
+    "native": "Langue maternelle",
+    "fluent": "Courant",
+    "proficient": "Compétent",
+    "conversational": "Conversationnel",
+    "basic": "Basique",
+    "beginner": "Débutant"
   }
 }

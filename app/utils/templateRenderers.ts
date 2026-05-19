@@ -202,13 +202,20 @@ export const generateSkillsContent = (skills: SkillItem[]): SectionContent[] => 
             };
         });
 };
-export const generateLanguagesContent = (languages: Language[]): SectionContent[] => {
+const PROFICIENCY_KEYS = new Set(['native', 'fluent', 'proficient', 'conversational', 'basic', 'beginner']);
+const localizeProficiency = (value: string, t?: TranslateFunction): string => {
+    if (!t) return value;
+    const key = value.trim().toLowerCase();
+    if (!PROFICIENCY_KEYS.has(key)) return value;
+    return t(`proficiency.${key}`);
+};
+export const generateLanguagesContent = (languages: Language[], t?: TranslateFunction): SectionContent[] => {
     return languages
         .filter(language => language.name.trim())
         .map((language) => {
             let content = `*${escapeTypstText(language.name)}*`;
             if (language.proficiency.trim()) {
-                content += ` - ${escapeTypstText(language.proficiency)}`;
+                content += ` - ${escapeTypstText(localizeProficiency(language.proficiency, t))}`;
             }
             return {
                 title: '',
@@ -257,10 +264,11 @@ export const generateSocialLinksContent = (data: ResumeData): SectionContent[] =
 };
 export const generateCertificatesContent = (certificates: Certificate[], t?: TranslateFunction): SectionContent[] => {
     const linkLabel = t ? t('common.link') : 'Link';
+    const fromLabel = t ? t('template.from') : ' from ';
     return certificates
         .filter(cert => cert.title.trim() || cert.issuer.trim())
         .map((cert) => {
-            const title = `${cert.title}${cert.issuer ? ' from ' + cert.issuer : ''}`;
+            const title = `${cert.title}${cert.issuer ? fromLabel + cert.issuer : ''}`;
             const certLink = cert.url?.trim() ? convertLink(cert.url, linkLabel) : '';
             const titleContent = certLink
                 ? `${escapeTypstText(title)} · ${certLink}`

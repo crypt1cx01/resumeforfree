@@ -172,7 +172,7 @@ function renderProjects(data: ResumeData, context: RendererContext): string {
 
 function renderLanguages(data: ResumeData, context: RendererContext): string {
     if (!data?.languages?.length) return '';
-    const items = generateLanguagesContent(data.languages);
+    const items = generateLanguagesContent(data.languages, context.t);
     const contents = items.map(i => i.content || '').filter(Boolean);
     const body = formatSectionItems(contents, context.config.sections);
     return renderAtsSection(getHeader('languages', data, context), body, context.fontSize);

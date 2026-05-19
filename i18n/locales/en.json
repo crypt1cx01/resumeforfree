@@ -566,7 +566,8 @@
     "at": " at ",
     "present": "Present",
     "grade": "Grade:",
-    "separator": ", "
+    "separator": ", ",
+    "from": " from "
   },
   "auth": {
     "signIn": "Sign In",
@@ -848,5 +849,13 @@
       "title": "Contact Us - Get Help with Resume For Free | Support",
       "description": "Need help with our free resume builder? Contact our support team for assistance with creating professional resumes. Fast and friendly customer service."
     }
+  },
+  "proficiency": {
+    "native": "Native",
+    "fluent": "Fluent",
+    "proficient": "Proficient",
+    "conversational": "Conversational",
+    "basic": "Basic",
+    "beginner": "Beginner"
   }
 }

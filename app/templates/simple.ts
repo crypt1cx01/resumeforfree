@@ -200,7 +200,7 @@ const parse = ({ data, font, locale, t, fontSize, photoShape }: TemplateParseInp
         ),
         languages: () => buildSection(
             getSectionLabel('languages', data, context),
-            itemsToRows(generateLanguagesContent(data.languages || [])),
+            itemsToRows(generateLanguagesContent(data.languages || [], context.t)),
         ),
         projects: () => buildSection(
             getSectionLabel('projects', data, context),

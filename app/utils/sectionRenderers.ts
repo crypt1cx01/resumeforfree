@@ -152,7 +152,7 @@ export const renderSharedLanguages: SectionRenderer = (data: ResumeData, context
         return '';
     }
 
-    const sectionContent = generateLanguagesContent(data.languages);
+    const sectionContent = generateLanguagesContent(data.languages, context.t);
     if (sectionContent.length === 0) return '';
 
     const formattedContent = formatSectionItems(sectionContent.map(item => item.content || ''), {

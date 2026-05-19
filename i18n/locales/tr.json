@@ -567,7 +567,8 @@
     "at": " - ",
     "present": "Devam Ediyor",
     "grade": "Not:",
-    "separator": ", "
+    "separator": ", ",
+    "from": " - "
   },
   "auth": {
     "signIn": "Giriş Yap",
@@ -849,5 +850,13 @@
       "title": "Bize Ulaşın - Resume For Free ile Yardım Alın | Destek",
       "description": "Ücretsiz özgeçmiş oluşturucumuzla ilgili yardıma mı ihtiyacınız var? Profesyonel özgeçmişler oluşturma konusunda yardım almak için destek ekibimizle iletişime geçin. Hızlı ve güler yüzlü müşteri hizmetleri."
     }
+  },
+  "proficiency": {
+    "native": "Ana dil",
+    "fluent": "Akıcı",
+    "proficient": "İleri",
+    "conversational": "Konuşma düzeyi",
+    "basic": "Temel",
+    "beginner": "Başlangıç"
   }
 }
