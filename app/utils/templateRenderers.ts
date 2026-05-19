@@ -56,7 +56,7 @@ export const generateExperienceContent = (experiences: Experience[], t?: Transla
             titleContent,
             date: convertDateRange(dateInput),
             dateText: formatDateRangeText(dateInput),
-            additionalInfo: description ? escapeTypstText(description) : undefined,
+            description: description ? escapeTypstText(description) : undefined,
             achievements,
         };
     });
@@ -77,11 +77,13 @@ export const generateInternshipsContent = (internships: Internship[], t?: Transl
         const achievements = internship.achievements
             .filter(achievement => achievement.text && achievement.text.trim() !== '')
             .map(achievement => achievement.text);
+        const description = internship.description?.trim();
         return {
             title: '',
             titleContent,
             date: convertDateRange(dateInput),
             dateText: formatDateRangeText(dateInput),
+            description: description ? escapeTypstText(description) : undefined,
             achievements,
         };
     });
@@ -95,19 +97,19 @@ export const generateEducationContent = (education: Education[], t?: TranslateFu
             ? `${edu.degree}${at}${edu.institution}${edu.location ? separator + edu.location : ''}`
             : `${edu.degree || edu.institution}${edu.location ? separator + edu.location : ''}`;
         const dateInput = { startDate: edu.startDate, endDate: edu.endDate, isPresent: edu.isPresent || false, t };
-        let additionalInfo = '';
+        let description = '';
         if (edu.graduationScore && edu.graduationScore.trim()) {
-            additionalInfo += `*${gradeLabel}* ${escapeTypstText(edu.graduationScore)}`;
+            description += `*${gradeLabel}* ${escapeTypstText(edu.graduationScore)}`;
         }
         if (edu.description && edu.description.trim()) {
-            if (additionalInfo) additionalInfo += '\n\n';
-            additionalInfo += escapeTypstText(edu.description);
+            if (description) description += '\n\n';
+            description += escapeTypstText(edu.description);
         }
         return {
             title,
             date: convertDateRange(dateInput),
             dateText: formatDateRangeText(dateInput),
-            additionalInfo: additionalInfo || undefined,
+            description: description || undefined,
         };
     });
 };
@@ -127,11 +129,13 @@ export const generateVolunteeringContent = (volunteering: Volunteering[], t?: Tr
         const achievements = vol.achievements
             .filter(achievement => achievement.text && achievement.text.trim() !== '')
             .map(achievement => achievement.text);
+        const description = vol.description?.trim();
         return {
             title: '',
             titleContent,
             date: convertDateRange(dateInput),
             dateText: formatDateRangeText(dateInput),
+            description: description ? escapeTypstText(description) : undefined,
             achievements,
         };
     });
@@ -268,7 +272,7 @@ export const generateCertificatesContent = (certificates: Certificate[], t?: Tra
                 titleContent,
                 date: cert.date ? convertDateRange(dateInput) : '',
                 dateText: cert.date ? formatDateRangeText(dateInput) : '',
-                additionalInfo: description || undefined,
+                description: description || undefined,
             };
         });
 };

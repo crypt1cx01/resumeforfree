@@ -52,7 +52,7 @@ export interface SectionContent {
     content?: string;
     achievements?: string[];
     links?: string[];
-    additionalInfo?: string;
+    description?: string;
 }
 
 export interface TemplateParseInput {

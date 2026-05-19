@@ -17,6 +17,7 @@ export interface Internship {
     startDate: string;
     endDate: string;
     isPresent?: boolean;
+    description?: string;
     achievements: Array<{ text: string }>;
 }
 export interface Education {
@@ -38,6 +39,7 @@ export interface Volunteering {
     startDate: string;
     endDate: string;
     isPresent?: boolean;
+    description?: string;
     achievements: Array<{ text: string }>;
 }
 export interface SkillItem {

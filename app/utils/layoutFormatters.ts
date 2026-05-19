@@ -72,8 +72,8 @@ export const formatExperienceItems = (
                 content += renderTemplateDateWithLink(item.date || '', item.content || null, fontSize);
             }
         }
-        if (item.additionalInfo) {
-            content += `\n\n#block(above: 0em, below: 0.8em)[#text(size: ${fontSize}pt)[${item.additionalInfo}]]`;
+        if (item.description) {
+            content += `\n\n#block(above: 0em, below: 0.8em)[#text(size: ${fontSize}pt)[${item.description}]]`;
         }
         if (item.achievements && item.achievements.length > 0) {
             content += '\n\n';
@@ -105,9 +105,9 @@ export const formatEducationItems = (
                 content += renderTemplateDate(item.date, fontSize);
             }
         }
-        if (item.additionalInfo) {
+        if (item.description) {
             content += '\n\n';
-            content += item.additionalInfo;
+            content += item.description;
         }
         return content;
     });
@@ -170,9 +170,9 @@ export const formatCertificatesItems = (
                 content += renderTemplateDate(item.date, fontSize);
             }
         }
-        if (item.additionalInfo) {
+        if (item.description) {
             content += '\n\n';
-            content += item.additionalInfo;
+            content += item.description;
         }
         return content;
     });

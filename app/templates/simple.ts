@@ -56,7 +56,7 @@ function renderRowContent(item: SectionContent): string {
     const title = titleMarkup(item);
     if (title) parts.push(title);
     if (item.content) parts.push(item.content);
-    if (item.additionalInfo) parts.push(item.additionalInfo);
+    if (item.description) parts.push(item.description);
     if (item.achievements?.length) {
         const list = convertList(item.achievements);
         if (list) parts.push(list);
