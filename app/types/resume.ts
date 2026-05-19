@@ -6,6 +6,7 @@ export interface Experience {
     startDate: string;
     endDate: string;
     isPresent?: boolean;
+    description?: string;
     achievements: Array<{ text: string }>;
 }
 export interface Internship {
@@ -138,7 +139,6 @@ export interface ResumeData {
     languages: Language[];
     certificates: Certificate[];
     technicalSkills: string;
-    softSkills: string;
     sectionOrder: SectionOrder;
     sectionHeaders: SectionHeaders;
     sectionPlacement: SectionPlacement;
@@ -202,7 +202,6 @@ export const defaultResumeData: ResumeData = {
     languages: [],
     certificates: [],
     technicalSkills: '',
-    softSkills: '',
     sectionOrder: {
         summary: 0,
         education: 1,

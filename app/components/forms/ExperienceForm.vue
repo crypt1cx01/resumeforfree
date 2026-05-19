@@ -87,6 +87,15 @@
                     </div>
                 </div>
             </div>
+            <div class="space-y-2 mb-4">
+                <Label>{{ t('common.description') }}</Label>
+                <Textarea
+                    :model-value="experience.description"
+                    :placeholder="t('common.description')"
+                    rows="3"
+                    @update:model-value="(value) => resumeStore.updateExperience(index, 'description', value)"
+                />
+            </div>
             <div class="space-y-4">
                 <div class="flex justify-between items-center">
                     <Label>{{ t('common.achievements') }}</Label>
@@ -174,6 +183,7 @@
 <script lang="ts" setup>
 import { Button } from '~/components/ui/button';
 import { Input } from '~/components/ui/input';
+import { Textarea } from '~/components/ui/textarea';
 import { Label } from '~/components/ui/label';
 import { Checkbox } from '~/components/ui/checkbox';
 import { ChevronDown, ChevronUp, Plus, Trash2 } from 'lucide-vue-next';

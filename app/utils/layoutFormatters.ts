@@ -72,6 +72,9 @@ export const formatExperienceItems = (
                 content += renderTemplateDateWithLink(item.date || '', item.content || null, fontSize);
             }
         }
+        if (item.additionalInfo) {
+            content += `\n\n#block(above: 0em, below: 0.8em)[#text(size: ${fontSize}pt)[${item.additionalInfo}]]`;
+        }
         if (item.achievements && item.achievements.length > 0) {
             content += '\n\n';
             content += convertList(item.achievements);

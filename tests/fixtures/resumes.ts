@@ -25,7 +25,6 @@ export const minimalResume: ResumeData = {
     languages: [],
     certificates: [],
     technicalSkills: '',
-    softSkills: '',
     sectionOrder: {
         summary: 0,
         education: 1,
@@ -269,7 +268,6 @@ export const fullResume: ResumeData = {
         },
     ],
     technicalSkills: '',
-    softSkills: '',
     sectionOrder: {
         summary: 0,
         experience: 1,

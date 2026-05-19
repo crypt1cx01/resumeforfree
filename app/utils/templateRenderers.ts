@@ -50,11 +50,13 @@ export const generateExperienceContent = (experiences: Experience[], t?: Transla
         const achievements = experience.achievements
             .filter(achievement => achievement.text && achievement.text.trim() !== '')
             .map(achievement => achievement.text);
+        const description = experience.description?.trim();
         return {
             title: '',
             titleContent,
             date: convertDateRange(dateInput),
             dateText: formatDateRangeText(dateInput),
+            additionalInfo: description ? escapeTypstText(description) : undefined,
             achievements,
         };
     });
