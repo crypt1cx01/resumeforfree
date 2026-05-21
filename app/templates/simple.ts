@@ -1,7 +1,7 @@
 import type { ResumeData, SectionHeaders, SectionOrder } from '~/types/resume';
 import type { SectionContent, Template, TemplateParseInput, TemplateRenderConfig } from '~/types/template';
 import { escapeTypstText } from '~/utils/stringUtils';
-import { convertEmail, convertLink, convertList, SECTION_SPACING } from '~/utils/typstUtils';
+import { convertEmail, convertLink, convertList, renderDescription, SECTION_SPACING } from '~/utils/typstUtils';
 import { RendererContext } from '~/utils/rendererContext';
 import { isRtlLocale } from '~/composables/useLocale';
 import { SECTION_TRANSLATION_MAP } from '~/composables/useSectionHeader';
@@ -51,12 +51,12 @@ function titleMarkup(item: SectionContent): string {
     return '';
 }
 
-function renderRowContent(item: SectionContent): string {
+function renderRowContent(item: SectionContent, fontSize: number): string {
     const parts: string[] = [];
     const title = titleMarkup(item);
     if (title) parts.push(title);
-    if (item.content) parts.push(item.content);
-    if (item.description) parts.push(item.description);
+    if (item.content) parts.push(renderDescription(item.content, fontSize));
+    if (item.description) parts.push(renderDescription(item.description, fontSize));
     if (item.achievements?.length) {
         const list = convertList(item.achievements);
         if (list) parts.push(list);
@@ -64,9 +64,9 @@ function renderRowContent(item: SectionContent): string {
     return parts.join('\n\n');
 }
 
-function itemsToRows(items: SectionContent[]): SimpleRow[] {
+function itemsToRows(items: SectionContent[], fontSize: number): SimpleRow[] {
     return items
-        .map(item => ({ date: item.date, content: renderRowContent(item) }))
+        .map(item => ({ date: item.date, content: renderRowContent(item, fontSize) }))
         .filter(r => r.content.trim());
 }
 
@@ -184,35 +184,35 @@ const parse = ({ data, font, locale, t, fontSize, photoShape }: TemplateParseInp
         profile: () => renderProfile(data, context),
         education: () => buildSection(
             getSectionLabel('education', data, context),
-            itemsToRows(generateEducationContent(data.education || [], context.t)),
+            itemsToRows(generateEducationContent(data.education || [], context.t), context.fontSize),
         ),
         experience: () => buildSection(
             getSectionLabel('experience', data, context),
-            itemsToRows(generateExperienceContent(data.experiences || [], context.t)),
+            itemsToRows(generateExperienceContent(data.experiences || [], context.t), context.fontSize),
         ),
         internships: () => buildSection(
             getSectionLabel('internships', data, context),
-            itemsToRows(generateInternshipsContent(data.internships || [], context.t)),
+            itemsToRows(generateInternshipsContent(data.internships || [], context.t), context.fontSize),
         ),
         skills: () => buildSection(
             getSectionLabel('skills', data, context),
-            itemsToRows(generateSkillsContent(data.skills || [])),
+            itemsToRows(generateSkillsContent(data.skills || []), context.fontSize),
         ),
         languages: () => buildSection(
             getSectionLabel('languages', data, context),
-            itemsToRows(generateLanguagesContent(data.languages || [], context.t)),
+            itemsToRows(generateLanguagesContent(data.languages || [], context.t), context.fontSize),
         ),
         projects: () => buildSection(
             getSectionLabel('projects', data, context),
-            itemsToRows(generateProjectsContent(data.projects || [], context.t)),
+            itemsToRows(generateProjectsContent(data.projects || [], context.t), context.fontSize),
         ),
         volunteering: () => buildSection(
             getSectionLabel('volunteering', data, context),
-            itemsToRows(generateVolunteeringContent(data.volunteering || [], context.t)),
+            itemsToRows(generateVolunteeringContent(data.volunteering || [], context.t), context.fontSize),
         ),
         certificates: () => buildSection(
             getSectionLabel('certificates', data, context),
-            itemsToRows(generateCertificatesContent(data.certificates || [], context.t)),
+            itemsToRows(generateCertificatesContent(data.certificates || [], context.t), context.fontSize),
         ),
     };
 

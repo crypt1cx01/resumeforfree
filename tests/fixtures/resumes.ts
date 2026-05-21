@@ -310,6 +310,86 @@ export const edgeCaseResume: ResumeData = {
     ],
 };
 
+// Resume with descriptions on every section that supports one.
+// Used for asserting standardized description-spacing markup across all templates.
+export const descriptionsResume: ResumeData = {
+    ...minimalResume,
+    firstName: 'Desc',
+    lastName: 'Tester',
+    summary: 'Summary text',
+    experiences: [
+        {
+            company: 'Acme',
+            position: 'Engineer',
+            location: 'Remote',
+            companyUrl: '',
+            startDate: '2020-01',
+            endDate: '',
+            isPresent: true,
+            description: 'ExperienceDescriptionMarker',
+            achievements: [{ text: 'shipped things' }],
+        },
+    ],
+    internships: [
+        {
+            company: 'Intern Co',
+            position: 'Intern',
+            location: 'Remote',
+            companyUrl: '',
+            startDate: '2019-06',
+            endDate: '2019-09',
+            isPresent: false,
+            description: 'InternshipDescriptionMarker',
+            achievements: [{ text: 'helped out' }],
+        },
+    ],
+    education: [
+        {
+            institution: 'Test U',
+            degree: 'BSc',
+            fieldOfStudy: 'CS',
+            location: 'Remote',
+            startDate: '2015-09',
+            endDate: '2019-06',
+            isPresent: false,
+            description: 'EducationDescriptionMarker',
+            graduationScore: '',
+            achievements: [{ text: 'EducationAchievementMarker' }],
+        },
+    ],
+    volunteering: [
+        {
+            organization: 'Org',
+            position: 'Volunteer',
+            location: 'Remote',
+            startDate: '2020-01',
+            endDate: '',
+            isPresent: true,
+            description: 'VolunteeringDescriptionMarker',
+            achievements: [{ text: 'volunteered' }],
+        },
+    ],
+    projects: [
+        {
+            title: 'Test Project',
+            description: 'ProjectDescriptionMarker',
+            links: [],
+            startDate: '',
+            endDate: '',
+            achievements: [{ text: 'built it' }],
+        },
+    ],
+    certificates: [
+        {
+            title: 'Test Cert',
+            issuer: 'Issuer',
+            date: '2022-01',
+            url: '',
+            description: 'CertificateDescriptionMarker',
+        },
+    ],
+};
+
 // All test fixtures exported as a collection
 export const testResumes = {
     minimal: minimalResume,
@@ -319,4 +399,5 @@ export const testResumes = {
     arabic: arabicResume,
     full: fullResume,
     edgeCase: edgeCaseResume,
+    descriptions: descriptionsResume,
 };

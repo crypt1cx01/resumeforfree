@@ -4,7 +4,12 @@ import { escapeTypstString, escapeTypstText } from './stringUtils';
 export const HEADER_SPACING = '1em';
 export const SECTION_SPACING = '1.6em';
 export const ITEMS_SPACING = '0.8em';
+export const DESCRIPTION_BELOW = '0.8em';
 export const PHOTO_SIZE = '25mm';
+export const renderDescription = (description: string, fontSize: number): string => {
+    if (!description) return '';
+    return `#block(above: 0em, below: ${DESCRIPTION_BELOW})[#text(size: ${fontSize}pt)[${description}]]`;
+};
 export const convertEmail = (email: string): string => {
     if (!email) return '';
     return `#link("mailto:${email}")[#text(fill: blue, dir: ltr, "${email}")]`;

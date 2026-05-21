@@ -30,6 +30,7 @@ export interface Education {
     isPresent?: boolean;
     description: string;
     graduationScore?: string;
+    achievements?: Array<{ text: string }>;
 }
 export interface Volunteering {
     organization: string;

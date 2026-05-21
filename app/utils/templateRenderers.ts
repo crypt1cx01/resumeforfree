@@ -105,11 +105,15 @@ export const generateEducationContent = (education: Education[], t?: TranslateFu
             if (description) description += '\n\n';
             description += escapeTypstText(edu.description);
         }
+        const achievements = (edu.achievements || [])
+            .filter(achievement => achievement.text && achievement.text.trim() !== '')
+            .map(achievement => achievement.text);
         return {
             title,
             date: convertDateRange(dateInput),
             dateText: formatDateRangeText(dateInput),
             description: description || undefined,
+            achievements,
         };
     });
 };

@@ -537,6 +537,7 @@ export const useResumeStore = defineStore('resume', {
                     isPresent: false,
                     description: '',
                     graduationScore: '',
+                    achievements: [],
                 }];
                 this.updateResumeData(this.activeResumeId, { education: newEducation });
             }
@@ -566,6 +567,69 @@ export const useResumeStore = defineStore('resume', {
                 const item = newEducation.splice(fromIndex, 1)[0];
                 newEducation.splice(toIndex, 0, item);
                 this.updateResumeData(this.activeResumeId, { education: newEducation });
+            }
+        },
+        addEducationAchievement(educationIndex: number, achievement = '') {
+            if (this.activeResumeId) {
+                const currentData = this.resumes[this.activeResumeId].data;
+                if (currentData.education[educationIndex]) {
+                    const newEducation = [...currentData.education];
+                    const existing = newEducation[educationIndex].achievements || [];
+                    newEducation[educationIndex] = {
+                        ...newEducation[educationIndex],
+                        achievements: [...existing, { text: achievement }],
+                    };
+                    this.updateResumeData(this.activeResumeId, { education: newEducation });
+                }
+            }
+        },
+        updateEducationAchievement(educationIndex: number, achievementIndex: number, achievement: string) {
+            if (this.activeResumeId) {
+                const currentData = this.resumes[this.activeResumeId].data;
+                const existing = currentData.education[educationIndex]?.achievements;
+                if (existing && existing[achievementIndex] !== undefined) {
+                    const newEducation = [...currentData.education];
+                    const newAchievements = [...existing];
+                    newAchievements[achievementIndex] = { text: achievement };
+                    newEducation[educationIndex] = {
+                        ...newEducation[educationIndex],
+                        achievements: newAchievements,
+                    };
+                    this.updateResumeData(this.activeResumeId, { education: newEducation });
+                }
+            }
+        },
+        removeEducationAchievement(educationIndex: number, achievementIndex: number) {
+            if (this.activeResumeId) {
+                const currentData = this.resumes[this.activeResumeId].data;
+                const existing = currentData.education[educationIndex]?.achievements;
+                if (existing) {
+                    const newEducation = [...currentData.education];
+                    const newAchievements = [...existing];
+                    newAchievements.splice(achievementIndex, 1);
+                    newEducation[educationIndex] = {
+                        ...newEducation[educationIndex],
+                        achievements: newAchievements,
+                    };
+                    this.updateResumeData(this.activeResumeId, { education: newEducation });
+                }
+            }
+        },
+        moveEducationAchievement(educationIndex: number, fromIndex: number, toIndex: number) {
+            if (this.activeResumeId) {
+                const currentData = this.resumes[this.activeResumeId].data;
+                const existing = currentData.education[educationIndex]?.achievements;
+                if (existing) {
+                    const newEducation = [...currentData.education];
+                    const newAchievements = [...existing];
+                    const item = newAchievements.splice(fromIndex, 1)[0];
+                    newAchievements.splice(toIndex, 0, item);
+                    newEducation[educationIndex] = {
+                        ...newEducation[educationIndex],
+                        achievements: newAchievements,
+                    };
+                    this.updateResumeData(this.activeResumeId, { education: newEducation });
+                }
             }
         },
         addVolunteering() {

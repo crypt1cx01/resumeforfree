@@ -2,6 +2,7 @@ import type { SectionContent, TemplateRenderConfig } from '~/types/template';
 import {
     convertList,
     ITEMS_SPACING,
+    renderDescription,
     renderTemplateDate,
     renderTemplateDateWithLink,
     renderTemplateHeader,
@@ -73,7 +74,7 @@ export const formatExperienceItems = (
             }
         }
         if (item.description) {
-            content += `\n\n#block(above: 0em, below: 0.8em)[#text(size: ${fontSize}pt)[${item.description}]]`;
+            content += `\n\n${renderDescription(item.description, fontSize)}`;
         }
         if (item.achievements && item.achievements.length > 0) {
             content += '\n\n';
@@ -106,8 +107,11 @@ export const formatEducationItems = (
             }
         }
         if (item.description) {
+            content += `\n\n${renderDescription(item.description, fontSize)}`;
+        }
+        if (item.achievements && item.achievements.length > 0) {
             content += '\n\n';
-            content += item.description;
+            content += convertList(item.achievements);
         }
         return content;
     });
@@ -135,7 +139,7 @@ export const formatProjectsItems = (
         }
         if (item.content) {
             if (content) content += '\n\n';
-            content += item.content;
+            content += renderDescription(item.content, fontSize);
         }
         if (item.achievements && item.achievements.length > 0) {
             if (content) content += '\n\n';
@@ -171,8 +175,7 @@ export const formatCertificatesItems = (
             }
         }
         if (item.description) {
-            content += '\n\n';
-            content += item.description;
+            content += `\n\n${renderDescription(item.description, fontSize)}`;
         }
         return content;
     });

@@ -87,7 +87,7 @@
                     </div>
                 </div>
             </div>
-            <div class="space-y-2">
+            <div class="space-y-2 mb-4">
                 <Label>{{ t('common.description') }}</Label>
                 <Textarea
                     :model-value="education.description"
@@ -96,15 +96,97 @@
                     @update:model-value="(value) => resumeStore.updateEducation(index, 'description', value)"
                 />
             </div>
+            <div class="space-y-4">
+                <div class="flex justify-between items-center">
+                    <Label>{{ t('common.achievements') }}</Label>
+                    <Button
+                        size="sm"
+                        variant="outline"
+                        @click="resumeStore.addEducationAchievement(index)"
+                    >
+                        <Plus class="w-4 h-4 mr-2" />
+                        {{ t('common.addAchievement') }}
+                    </Button>
+                </div>
+                <div class="space-y-2">
+                    <div
+                        v-for="(_, achievementIndex) in (education.achievements || [])"
+                        :key="achievementIndex"
+                        class="space-y-2"
+                    >
+                        <div class="flex items-center space-x-2 md:space-x-2">
+                            <Input
+                                :model-value="(education.achievements || [])[achievementIndex].text"
+                                class="flex-1"
+                                :placeholder="t('common.achievementPlaceholder')"
+                                @update:model-value="(value) => resumeStore.updateEducationAchievement(index, achievementIndex, value)"
+                                @keydown.enter="resumeStore.addEducationAchievement(index)"
+                            />
+                            <div class="hidden md:flex items-center space-x-1">
+                                <Button
+                                    :disabled="achievementIndex === 0"
+                                    size="sm"
+                                    variant="outline"
+                                    @click="resumeStore.moveEducationAchievement(index, achievementIndex, achievementIndex - 1)"
+                                >
+                                    <ChevronUp class="w-4 h-4" />
+                                </Button>
+                                <Button
+                                    :disabled="achievementIndex === (education.achievements || []).length - 1"
+                                    size="sm"
+                                    variant="outline"
+                                    @click="resumeStore.moveEducationAchievement(index, achievementIndex, achievementIndex + 1)"
+                                >
+                                    <ChevronDown class="w-4 h-4" />
+                                </Button>
+                                <Button
+                                    size="sm"
+                                    variant="outline"
+                                    @click="resumeStore.removeEducationAchievement(index, achievementIndex)"
+                                >
+                                    <Trash2 class="w-4 h-4" />
+                                </Button>
+                            </div>
+                        </div>
+                        <div class="flex md:hidden items-center justify-center space-x-2">
+                            <Button
+                                :disabled="achievementIndex === 0"
+                                size="sm"
+                                variant="outline"
+                                @click="resumeStore.moveEducationAchievement(index, achievementIndex, achievementIndex - 1)"
+                            >
+                                <ChevronUp class="w-4 h-4" />
+                            </Button>
+                            <Button
+                                :disabled="achievementIndex === (education.achievements || []).length - 1"
+                                size="sm"
+                                variant="outline"
+                                @click="resumeStore.moveEducationAchievement(index, achievementIndex, achievementIndex + 1)"
+                            >
+                                <ChevronDown class="w-4 h-4" />
+                            </Button>
+                            <Button
+                                size="sm"
+                                variant="outline"
+                                @click="resumeStore.removeEducationAchievement(index, achievementIndex)"
+                            >
+                                <Trash2 class="w-4 h-4" />
+                            </Button>
+                        </div>
+                    </div>
+                </div>
+            </div>
         </FormCard>
     </FormContainer>
 </template>
 
 <script lang="ts" setup>
+import { Button } from '~/components/ui/button';
 import { Input } from '~/components/ui/input';
 import { Label } from '~/components/ui/label';
 import { Textarea } from '~/components/ui/textarea';
 import { Checkbox } from '~/components/ui/checkbox';
+import { ChevronDown, ChevronUp, Plus, Trash2 } from 'lucide-vue-next';
 import MonthYearPicker from '~/components/elements/MonthYearPicker.vue';
 import FormCard from '~/components/elements/FormCard.vue';
 import FormContainer from '~/components/elements/FormContainer.vue';
