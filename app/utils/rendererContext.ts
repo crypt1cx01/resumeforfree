@@ -1,4 +1,4 @@
-import type { TemplateRenderConfig, TranslateFunction } from '~/types/template';
+import type { SectionStyle, TemplateRenderConfig, TranslateFunction } from '~/types/template';
 import type { PhotoShape } from '~/types/resume';
 
 export interface RendererContextInput {
@@ -7,6 +7,7 @@ export interface RendererContextInput {
     config: TemplateRenderConfig;
     locale: string;
     photoShape: PhotoShape;
+    sectionStyle?: SectionStyle;
 }
 
 export class RendererContext {
@@ -15,6 +16,7 @@ export class RendererContext {
     public readonly config: TemplateRenderConfig;
     public readonly locale: string;
     public readonly photoShape: PhotoShape;
+    public readonly sectionStyle: SectionStyle;
 
     constructor(input: RendererContextInput) {
         this.t = input.t;
@@ -22,5 +24,9 @@ export class RendererContext {
         this.config = input.config;
         this.locale = input.locale;
         this.photoShape = input.photoShape;
+        this.sectionStyle = {
+            ...(input.sectionStyle ?? {}),
+            fontSize: input.sectionStyle?.fontSize ?? input.fontSize,
+        };
     }
 }

@@ -3,7 +3,7 @@ import { defaultTemplate } from '~/templates/default';
 import { compactTemplate } from '~/templates/compact';
 import { atsFriendlyTemplate } from '~/templates/atsFriendly';
 import { simpleTemplate } from '~/templates/simple';
-import { descriptionsResume } from '../fixtures/resumes';
+import { descriptionsResume, fullResume } from '../fixtures/resumes';
 
 const mockT = (key: string): string => {
     const translations: Record<string, string> = {
@@ -122,6 +122,20 @@ describe('Description spacing standardization', () => {
             for (const { name, template } of TEMPLATES) {
                 const out = parseFor(template);
                 expect(out, `${name} missing standardized description spacing`).toContain(expected);
+            }
+        });
+
+        it('renders skills with identical item markup in every template', () => {
+            const skillsItemPattern = '#block(above: 0em, below: 0.8em)[*Frontend:* React, Vue.js, TypeScript, HTML, CSS]';
+            for (const { name, template } of TEMPLATES) {
+                const out = template.parse({
+                    data: fullResume,
+                    font: 'Calibri',
+                    locale: 'en',
+                    fontSize: FONT_SIZE,
+                    t: mockT,
+                });
+                expect(out, `${name} did not render skill item with standardized block`).toContain(skillsItemPattern);
             }
         });
     });

@@ -21,6 +21,17 @@ export interface TemplatePhotoConfig {
     supported: boolean;
 }
 
+export interface SectionStyle {
+    fontSize?: number;
+    headerColor?: string;
+    headerUnderline?: boolean;
+    headerUpperCase?: boolean;
+    headerSizeOffset?: number;
+    spacingAbove?: string;
+    spacingBelow?: string;
+    headerBelow?: string;
+}
+
 export interface TemplateRenderConfig {
     layout: 'single-column' | 'two-column';
     sections: {

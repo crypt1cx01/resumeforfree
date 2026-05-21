@@ -24,7 +24,7 @@ import {
     formatSectionItems,
     formatSimpleItems,
     formatSocialLinks,
-    wrapInSectionBlock,
+    wrapInSection,
 } from './layoutFormatters';
 
 function getLocalizedSectionHeader(
@@ -51,7 +51,7 @@ export const renderSharedExperience: SectionRenderer = (data: ResumeData, contex
     const formattedContent = formatExperienceItems(sectionContent, context.config, context.fontSize);
     const headerText = getLocalizedSectionHeader('experience', data, context);
 
-    return wrapInSectionBlock(headerText, formattedContent, context.fontSize);
+    return wrapInSection(headerText, formattedContent, context);
 };
 
 /**
@@ -66,7 +66,7 @@ export const renderSharedInternships: SectionRenderer = (data: ResumeData, conte
     const formattedContent = formatExperienceItems(sectionContent, context.config, context.fontSize);
     const headerText = getLocalizedSectionHeader('internships', data, context);
 
-    return wrapInSectionBlock(headerText, formattedContent, context.fontSize);
+    return wrapInSection(headerText, formattedContent, context);
 };
 
 /**
@@ -81,7 +81,7 @@ export const renderSharedEducation: SectionRenderer = (data: ResumeData, context
     const formattedContent = formatEducationItems(sectionContent, context.config, context.fontSize);
     const headerText = getLocalizedSectionHeader('education', data, context);
 
-    return wrapInSectionBlock(headerText, formattedContent, context.fontSize);
+    return wrapInSection(headerText, formattedContent, context);
 };
 
 /**
@@ -96,7 +96,7 @@ export const renderSharedVolunteering: SectionRenderer = (data: ResumeData, cont
     const formattedContent = formatExperienceItems(sectionContent, context.config, context.fontSize);
     const headerText = getLocalizedSectionHeader('volunteering', data, context);
 
-    return wrapInSectionBlock(headerText, formattedContent, context.fontSize);
+    return wrapInSection(headerText, formattedContent, context);
 };
 
 /**
@@ -113,56 +113,46 @@ export const renderSharedProjects: SectionRenderer = (data: ResumeData, context:
     const formattedContent = formatProjectsItems(sectionContent, context.config, context.fontSize);
     const headerText = getLocalizedSectionHeader('projects', data, context);
 
-    return wrapInSectionBlock(headerText, formattedContent, context.fontSize);
+    return wrapInSection(headerText, formattedContent, context);
 };
 
-/**
- * Render skills section using shared logic
- */
-export const renderSharedSkills: SectionRenderer = (data: ResumeData, context: RendererContext): string => {
+export const renderSharedSkillsBody = (data: ResumeData): string => {
     if (data?.skills && data.skills.length > 0) {
         const sectionContent = generateSkillsContent(data.skills);
         if (sectionContent.length === 0) return '';
-
-        const formattedContent = formatSectionItems(sectionContent.map(item => item.content || ''), {
+        return formatSectionItems(sectionContent.map(item => item.content || ''), {
             spacing: 'block',
             itemSpacing: ITEMS_SPACING,
             joinSeparator: '',
         });
-        const headerText = getLocalizedSectionHeader('skills', data, context);
-
-        return wrapInSectionBlock(headerText, formattedContent, context.fontSize);
     }
-
-    // Handle legacy technicalSkills format
-    if (!data?.technicalSkills || data.technicalSkills.trim() === '') {
-        return '';
-    }
-
-    const content = data.technicalSkills.trim();
-    const headerText = getLocalizedSectionHeader('skills', data, context);
-    return wrapInSectionBlock(headerText, content, context.fontSize);
+    if (!data?.technicalSkills || data.technicalSkills.trim() === '') return '';
+    return data.technicalSkills.trim();
 };
 
-/**
- * Render languages section using shared logic
- */
-export const renderSharedLanguages: SectionRenderer = (data: ResumeData, context: RendererContext): string => {
-    if (!data?.languages || data.languages.length === 0) {
-        return '';
-    }
+export const renderSharedSkills: SectionRenderer = (data: ResumeData, context: RendererContext): string => {
+    const body = renderSharedSkillsBody(data);
+    if (!body) return '';
+    const headerText = getLocalizedSectionHeader('skills', data, context);
+    return wrapInSection(headerText, body, context);
+};
 
+export const renderSharedLanguagesBody = (data: ResumeData, context: RendererContext): string => {
+    if (!data?.languages || data.languages.length === 0) return '';
     const sectionContent = generateLanguagesContent(data.languages, context.t);
     if (sectionContent.length === 0) return '';
-
-    const formattedContent = formatSectionItems(sectionContent.map(item => item.content || ''), {
+    return formatSectionItems(sectionContent.map(item => item.content || ''), {
         spacing: 'block',
         itemSpacing: ITEMS_SPACING,
         joinSeparator: '',
     });
-    const headerText = getLocalizedSectionHeader('languages', data, context);
+};
 
-    return wrapInSectionBlock(headerText, formattedContent, context.fontSize);
+export const renderSharedLanguages: SectionRenderer = (data: ResumeData, context: RendererContext): string => {
+    const body = renderSharedLanguagesBody(data, context);
+    if (!body) return '';
+    const headerText = getLocalizedSectionHeader('languages', data, context);
+    return wrapInSection(headerText, body, context);
 };
 
 /**
@@ -175,7 +165,7 @@ export const renderSharedContactInfo: SectionRenderer = (data: ResumeData, conte
     const formattedContent = formatSimpleItems(sectionContent, context.config);
     const headerText = getLocalizedSectionHeader('info', data, context);
 
-    return wrapInSectionBlock(headerText, formattedContent, context.fontSize);
+    return wrapInSection(headerText, formattedContent, context);
 };
 
 /**
@@ -193,21 +183,19 @@ export const renderSharedSocialLinks: SectionRenderer = (data: ResumeData, conte
         return formattedContent;
     }
 
-    return wrapInSectionBlock(headerText, formattedContent, context.fontSize);
+    return wrapInSection(headerText, formattedContent, context);
 };
 
-/**
- * Render profile/summary section using shared logic
- */
+export const renderSharedProfileBody = (data: ResumeData): string => {
+    if (!data?.summary || !data.summary.trim()) return '';
+    return escapeTypstText(data.summary.trim());
+};
+
 export const renderSharedProfile: SectionRenderer = (data: ResumeData, context: RendererContext): string => {
-    if (!data?.summary || !data.summary.trim()) {
-        return '';
-    }
-
+    const body = renderSharedProfileBody(data);
+    if (!body) return '';
     const headerText = getLocalizedSectionHeader('profile', data, context);
-    const content = escapeTypstText(data.summary.trim());
-
-    return wrapInSectionBlock(headerText, content, context.fontSize);
+    return wrapInSection(headerText, body, context);
 };
 
 /**
@@ -224,7 +212,7 @@ export const renderSharedCertificates: SectionRenderer = (data: ResumeData, cont
     const formattedContent = formatCertificatesItems(sectionContent, context.config, context.fontSize);
     const headerText = getLocalizedSectionHeader('certificates', data, context);
 
-    return wrapInSectionBlock(headerText, formattedContent, context.fontSize);
+    return wrapInSection(headerText, formattedContent, context);
 };
 
 export const renderProfilePhoto = (data: ResumeData, context: RendererContext): string => {

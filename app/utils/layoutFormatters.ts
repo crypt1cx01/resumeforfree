@@ -1,11 +1,13 @@
-import type { SectionContent, TemplateRenderConfig } from '~/types/template';
+import type { SectionContent, SectionStyle, TemplateRenderConfig } from '~/types/template';
+import { escapeTypstText } from './stringUtils';
+import type { RendererContext } from './rendererContext';
 import {
     convertList,
+    HEADER_SPACING,
     ITEMS_SPACING,
     renderDescription,
     renderTemplateDate,
     renderTemplateDateWithLink,
-    renderTemplateHeader,
     renderTemplateSubHeader,
     renderTemplateSubHeaderContent,
     SECTION_SPACING,
@@ -193,14 +195,33 @@ export const formatSimpleItems = (
     const contentItems = sectionContent.map(item => item.content || '').filter(Boolean);
     return formatSectionItems(contentItems, config.sections);
 };
-export const wrapInSectionBlock = (
+const buildSectionHeader = (headerText: string, style: SectionStyle): string => {
+    const fontSize = style.fontSize ?? 12;
+    const display = style.headerUpperCase ? headerText.toUpperCase() : headerText;
+    const size = `${fontSize + (style.headerSizeOffset ?? 2)}pt`;
+    const fillProp = style.headerColor ? `, fill: ${style.headerColor}` : '';
+    const headerText$ = `#text(size: ${size}, weight: "bold"${fillProp})[${escapeTypstText(display)}]`;
+
+    if (style.headerUnderline) {
+        const stroke = style.headerColor ? `0.5pt + ${style.headerColor}` : '0.5pt';
+        const line = `#block(above: 0.3em, below: 0.8em)[#line(length: 100%, stroke: ${stroke})]`;
+        return `${headerText$}\n${line}`;
+    }
+    const below = style.headerBelow ?? HEADER_SPACING;
+    return `#block(below: ${below}, above: 0em)[${headerText$}]`;
+};
+
+export const wrapInSection = (
     headerText: string,
     content: string,
-    fontSize: number,
+    context: RendererContext,
 ): string => {
     if (!content.trim()) return '';
-    return `#block(above: 0em, below: ${SECTION_SPACING})[
-${renderTemplateHeader(headerText, fontSize)}
+    const style = context.sectionStyle;
+    const above = style.spacingAbove ?? '0em';
+    const below = style.spacingBelow ?? SECTION_SPACING;
+    return `#block(above: ${above}, below: ${below})[
+${buildSectionHeader(headerText, style)}
 ${content}
 ]`;
 };

@@ -1,29 +1,10 @@
-import type { ResumeData, SectionHeaders, SectionOrder } from '~/types/resume';
-import type { Template, TemplateParseInput, TemplateRenderConfig } from '~/types/template';
+import type { ResumeData, SectionOrder } from '~/types/resume';
+import type { SectionStyle, Template, TemplateParseInput, TemplateRenderConfig } from '~/types/template';
 import { escapeTypstText } from '~/utils/stringUtils';
-import { convertEmail, convertLink, SECTION_SPACING } from '~/utils/typstUtils';
+import { convertEmail, convertLink } from '~/utils/typstUtils';
 import { RendererContext } from '~/utils/rendererContext';
 import { isRtlLocale } from '~/composables/useLocale';
-import { SECTION_TRANSLATION_MAP } from '~/composables/useSectionHeader';
-import { renderProfilePhoto } from '~/utils/sectionRenderers';
-import {
-    generateCertificatesContent,
-    generateEducationContent,
-    generateExperienceContent,
-    generateInternshipsContent,
-    generateLanguagesContent,
-    generateProjectsContent,
-    generateSkillsContent,
-    generateVolunteeringContent,
-} from '~/utils/templateRenderers';
-import {
-    formatCertificatesItems,
-    formatEducationItems,
-    formatExperienceItems,
-    formatProjectsItems,
-    formatSectionItems,
-    formatSimpleItems,
-} from '~/utils/layoutFormatters';
+import { getSharedSectionRenderers, renderProfilePhoto } from '~/utils/sectionRenderers';
 
 const ATS_BLUE = 'rgb("#1d4ed8")';
 
@@ -52,21 +33,13 @@ const ATS_LAYOUT_CONFIG: TemplateRenderConfig = {
     },
 };
 
-function getHeader(section: keyof SectionHeaders, data: ResumeData, context: RendererContext): string {
-    const override = data.sectionHeaders?.[section];
-    if (override) return override.toUpperCase();
-    const key = SECTION_TRANSLATION_MAP[section];
-    return (key ? context.t(key) : '').toUpperCase();
-}
-
-function renderAtsSection(headerText: string, body: string, fontSize: number): string {
-    if (!body.trim()) return '';
-    return `#block(above: 1em, below: ${SECTION_SPACING})[
-#text(size: ${fontSize + 1}pt, weight: "bold", fill: ${ATS_BLUE})[${escapeTypstText(headerText)}]
-#block(above: 0.3em, below: 0.8em)[#line(length: 100%, stroke: 0.5pt + ${ATS_BLUE})]
-${body}
-]`;
-}
+const ATS_SECTION_STYLE: SectionStyle = {
+    headerColor: ATS_BLUE,
+    headerUnderline: true,
+    headerUpperCase: true,
+    headerSizeOffset: 1,
+    spacingAbove: '1em',
+};
 
 function renderTopHeader(data: ResumeData, context: RendererContext, fontSize: number): string {
     const firstName = escapeTypstText(data?.firstName || '').toUpperCase();
@@ -129,85 +102,30 @@ function renderTopHeader(data: ResumeData, context: RendererContext, fontSize: n
 #block(above: 0.6em, below: 0em)[#line(length: 100%, stroke: 0.5pt + ${ATS_BLUE})]`;
 }
 
-function renderProfile(data: ResumeData, context: RendererContext): string {
-    if (!data?.summary) return '';
-    const body = `#text(size: ${context.fontSize}pt)[${escapeTypstText(data.summary)}]`;
-    return renderAtsSection(context.t('forms.personalInfo.profile') || 'PROFILE', body, context.fontSize);
-}
-
-function renderExperience(data: ResumeData, context: RendererContext): string {
-    if (!data?.experiences?.length) return '';
-    const items = generateExperienceContent(data.experiences, context.t);
-    const body = formatExperienceItems(items, context.config, context.fontSize);
-    return renderAtsSection(getHeader('experience', data, context), body, context.fontSize);
-}
-
-function renderInternships(data: ResumeData, context: RendererContext): string {
-    if (!data?.internships?.length) return '';
-    const items = generateInternshipsContent(data.internships, context.t);
-    const body = formatExperienceItems(items, context.config, context.fontSize);
-    return renderAtsSection(getHeader('internships', data, context), body, context.fontSize);
-}
-
-function renderEducation(data: ResumeData, context: RendererContext): string {
-    if (!data?.education?.length) return '';
-    const items = generateEducationContent(data.education, context.t);
-    const body = formatEducationItems(items, context.config, context.fontSize);
-    return renderAtsSection(getHeader('education', data, context), body, context.fontSize);
-}
-
-function renderSkills(data: ResumeData, context: RendererContext): string {
-    if (!data?.skills?.length) return '';
-    const items = generateSkillsContent(data.skills);
-    const body = formatSimpleItems(items, context.config);
-    return renderAtsSection(getHeader('skills', data, context), body, context.fontSize);
-}
-
-function renderProjects(data: ResumeData, context: RendererContext): string {
-    if (!data?.projects?.length) return '';
-    const items = generateProjectsContent(data.projects, context.t);
-    const body = formatProjectsItems(items, context.config, context.fontSize);
-    return renderAtsSection(getHeader('projects', data, context), body, context.fontSize);
-}
-
-function renderLanguages(data: ResumeData, context: RendererContext): string {
-    if (!data?.languages?.length) return '';
-    const items = generateLanguagesContent(data.languages, context.t);
-    const contents = items.map(i => i.content || '').filter(Boolean);
-    const body = formatSectionItems(contents, context.config.sections);
-    return renderAtsSection(getHeader('languages', data, context), body, context.fontSize);
-}
-
-function renderVolunteering(data: ResumeData, context: RendererContext): string {
-    if (!data?.volunteering?.length) return '';
-    const items = generateVolunteeringContent(data.volunteering, context.t);
-    const body = formatExperienceItems(items, context.config, context.fontSize);
-    return renderAtsSection(getHeader('volunteering', data, context), body, context.fontSize);
-}
-
-function renderCertificates(data: ResumeData, context: RendererContext): string {
-    if (!data?.certificates?.length) return '';
-    const items = generateCertificatesContent(data.certificates, context.t);
-    const body = formatCertificatesItems(items, context.config, context.fontSize);
-    return renderAtsSection(getHeader('certificates', data, context), body, context.fontSize);
-}
-
 const parse = ({ data, font, locale, t, fontSize, photoShape }: TemplateParseInput): string => {
     const isRtl = isRtlLocale(locale);
-    const context = new RendererContext({ t, fontSize, config: ATS_LAYOUT_CONFIG, locale, photoShape: photoShape || 'rectangle' });
+    const context = new RendererContext({
+        t,
+        fontSize,
+        config: ATS_LAYOUT_CONFIG,
+        locale,
+        photoShape: photoShape || 'rectangle',
+        sectionStyle: ATS_SECTION_STYLE,
+    });
 
     const header = renderTopHeader(data, context, fontSize);
+    const shared = getSharedSectionRenderers();
 
     const sectionRenderers: Record<string, () => string> = {
-        profile: () => renderProfile(data, context),
-        experience: () => renderExperience(data, context),
-        internships: () => renderInternships(data, context),
-        education: () => renderEducation(data, context),
-        skills: () => renderSkills(data, context),
-        projects: () => renderProjects(data, context),
-        languages: () => renderLanguages(data, context),
-        volunteering: () => renderVolunteering(data, context),
-        certificates: () => renderCertificates(data, context),
+        profile: () => shared.profile(data, context),
+        experience: () => shared.experience(data, context),
+        internships: () => shared.internships(data, context),
+        education: () => shared.education(data, context),
+        skills: () => shared.skills(data, context),
+        projects: () => shared.projects(data, context),
+        languages: () => shared.languages(data, context),
+        volunteering: () => shared.volunteering(data, context),
+        certificates: () => shared.certificates(data, context),
     };
 
     const orderedKeys = Object.keys(sectionRenderers).sort((a, b) => {

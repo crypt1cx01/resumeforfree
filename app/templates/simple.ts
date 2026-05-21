@@ -10,12 +10,10 @@ import {
     generateEducationContent,
     generateExperienceContent,
     generateInternshipsContent,
-    generateLanguagesContent,
     generateProjectsContent,
-    generateSkillsContent,
     generateVolunteeringContent,
 } from '~/utils/templateRenderers';
-import { renderProfilePhoto } from '~/utils/sectionRenderers';
+import { renderProfilePhoto, renderSharedLanguagesBody, renderSharedProfileBody, renderSharedSkillsBody } from '~/utils/sectionRenderers';
 
 const SIMPLE_LAYOUT_CONFIG: TemplateRenderConfig = {
     layout: 'single-column',
@@ -76,10 +74,11 @@ function buildSection(label: string, rows: SimpleRow[]): SimpleSection | null {
 }
 
 function renderProfile(data: ResumeData, context: RendererContext): SimpleSection | null {
-    if (!data?.summary) return null;
+    const body = renderSharedProfileBody(data);
+    if (!body) return null;
     return buildSection(
         context.t('forms.personalInfo.profile') || 'PROFILE',
-        [{ content: escapeTypstText(data.summary) }],
+        [{ content: body }],
     );
 }
 
@@ -194,14 +193,16 @@ const parse = ({ data, font, locale, t, fontSize, photoShape }: TemplateParseInp
             getSectionLabel('internships', data, context),
             itemsToRows(generateInternshipsContent(data.internships || [], context.t), context.fontSize),
         ),
-        skills: () => buildSection(
-            getSectionLabel('skills', data, context),
-            itemsToRows(generateSkillsContent(data.skills || []), context.fontSize),
-        ),
-        languages: () => buildSection(
-            getSectionLabel('languages', data, context),
-            itemsToRows(generateLanguagesContent(data.languages || [], context.t), context.fontSize),
-        ),
+        skills: () => {
+            const body = renderSharedSkillsBody(data);
+            if (!body) return null;
+            return buildSection(getSectionLabel('skills', data, context), [{ content: body }]);
+        },
+        languages: () => {
+            const body = renderSharedLanguagesBody(data, context);
+            if (!body) return null;
+            return buildSection(getSectionLabel('languages', data, context), [{ content: body }]);
+        },
         projects: () => buildSection(
             getSectionLabel('projects', data, context),
             itemsToRows(generateProjectsContent(data.projects || [], context.t), context.fontSize),
