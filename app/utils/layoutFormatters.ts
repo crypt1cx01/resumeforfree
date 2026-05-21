@@ -125,24 +125,26 @@ export const formatProjectsItems = (
     config: TemplateRenderConfig,
     fontSize: number,
 ): string => {
+    const inline = config.sections.datesInline === true;
     const formattedItems = sectionContent.map((item) => {
         let content = '';
-        if (item.titleContent) {
-            content += `#block(below: 0.4em)[${item.titleContent}]`;
+        if (inline && item.dateText) {
+            const titleInner = item.titleContent ? item.titleContent : item.title;
+            const titleMarkup = `#text(size: ${fontSize}pt, weight: "bold")[${titleInner}]`;
+            content = renderInlineTitleAndDate(titleMarkup, item.dateText, fontSize);
         }
-        else if (item.title) {
-            content += item.title;
+        else {
+            content = renderItemTitle(item, fontSize);
+            if (item.date) {
+                content += '\n\n';
+                content += renderTemplateDate(item.date, fontSize);
+            }
         }
-        if (item.date) {
-            if (content) content += '\n\n';
-            content += renderTemplateDate(item.date, fontSize);
-        }
-        if (item.content) {
-            if (content) content += '\n\n';
-            content += renderDescription(item.content, fontSize);
+        if (item.description) {
+            content += `\n\n${renderDescription(item.description, fontSize)}`;
         }
         if (item.achievements && item.achievements.length > 0) {
-            if (content) content += '\n\n';
+            content += '\n\n';
             content += convertList(item.achievements);
         }
         return content;

@@ -71,7 +71,6 @@ describe('Description spacing standardization', () => {
 
             it('renders education achievement as a list item', () => {
                 expect(result).toContain('EducationAchievementMarker');
-                // Achievements use convertList → "- text" bullet markup
                 expect(result).toMatch(/- EducationAchievementMarker/);
             });
 
@@ -79,8 +78,6 @@ describe('Description spacing standardization', () => {
                 for (const marker of Object.values(SECTION_DESCRIPTIONS)) {
                     const wrappedIdx = result.indexOf(wrap(marker));
                     expect(wrappedIdx).toBeGreaterThan(-1);
-                    // Any other occurrence of the marker (e.g. unwrapped) must not exist
-                    // outside the wrapped position.
                     const allOccurrences = result.split(marker).length - 1;
                     expect(allOccurrences).toBe(1);
                 }
@@ -89,11 +86,25 @@ describe('Description spacing standardization', () => {
             it('uses the same wrapping markup for every section description', () => {
                 const pattern = /#block\(above: 0em, below: 0\.8em\)\[#text\(size: 12pt\)\[/g;
                 const matches = result.match(pattern) || [];
-                // Six section descriptions in the fixture should produce >= 6 wrapped blocks
                 expect(matches.length).toBeGreaterThanOrEqual(Object.keys(SECTION_DESCRIPTIONS).length);
             });
         });
     }
+
+    describe('projects mirror experience layout', () => {
+        const inlineTemplates = [
+            { name: 'compact', template: compactTemplate },
+            { name: 'atsFriendly', template: atsFriendlyTemplate },
+        ] as const;
+
+        for (const { name, template } of inlineTemplates) {
+            it(`${name}: project title and date share the same line (grid) like experience`, () => {
+                const result = parseFor(template);
+                const gridPattern = /#grid\(columns: \(1fr, auto\), column-gutter: 0\.8em, \[#text\(size: 12pt, weight: "bold"\)\[[^\]]*Test Project[^\]]*\]\], \[#text\(size: 12pt, weight: "bold", fill: rgb\("#4B5563"\)\)\[/;
+                expect(result).toMatch(gridPattern);
+            });
+        }
+    });
 
     describe('cross-template consistency', () => {
         it('produces the identical wrapping markup across all four templates', () => {
@@ -107,8 +118,6 @@ describe('Description spacing standardization', () => {
         });
 
         it('uses identical spacing values across templates (no drift)', () => {
-            // The standardized helper hard-codes "above: 0em, below: 0.8em" with
-            // the document fontSize. If any template diverges, this assertion fails.
             const expected = `above: 0em, below: 0.8em)[#text(size: ${FONT_SIZE}pt)`;
             for (const { name, template } of TEMPLATES) {
                 const out = parseFor(template);

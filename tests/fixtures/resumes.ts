@@ -310,8 +310,6 @@ export const edgeCaseResume: ResumeData = {
     ],
 };
 
-// Resume with descriptions on every section that supports one.
-// Used for asserting standardized description-spacing markup across all templates.
 export const descriptionsResume: ResumeData = {
     ...minimalResume,
     firstName: 'Desc',
@@ -374,8 +372,9 @@ export const descriptionsResume: ResumeData = {
             title: 'Test Project',
             description: 'ProjectDescriptionMarker',
             links: [],
-            startDate: '',
-            endDate: '',
+            startDate: '2021-03',
+            endDate: '2022-09',
+            isPresent: false,
             achievements: [{ text: 'built it' }],
         },
     ],

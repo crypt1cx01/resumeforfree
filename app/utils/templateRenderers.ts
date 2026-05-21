@@ -153,9 +153,7 @@ export const generateProjectsContent = (projects: Project[], t?: TranslateFuncti
             return project.title.trim() || project.description.trim() || hasLinks || hasAchievements;
         })
         .map((project) => {
-            const name = project.title.trim()
-                ? `*${escapeTypstText(project.title.trim())}*`
-                : '';
+            const name = project.title.trim() ? escapeTypstText(project.title.trim()) : '';
             const linkMarkups = (project.links || [])
                 .map((link) => {
                     const url = link.url?.trim();
@@ -181,7 +179,7 @@ export const generateProjectsContent = (projects: Project[], t?: TranslateFuncti
                 titleContent: titleContent || undefined,
                 date: convertDateRange(dateInput),
                 dateText: formatDateRangeText(dateInput),
-                content: desc || undefined,
+                description: desc || undefined,
                 achievements,
             };
         });
