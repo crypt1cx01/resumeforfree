@@ -1,0 +1,21 @@
+Profile
+Strategic and results-driven Senior IT Specialist with extensive expertise in architecting, securing, and maintaining robust enterprise IT infrastructures. Proven track record in orchestrating cross-functional network deployments, hardware provisioning, and complex server environments (including IP telephony, advanced CCTV matrices, and critical server hardware). Expertly bridges the gap between technical operations and business sustainability through senior-level management and customization of Odoo ERP and Salesforce CRM platforms. Formally certified in Cybersecurity (CEH by Cairo University), Networking (Cisco CCNA, CompTIA N+), and Linux Administration (CompTIA Linux+, Ubuntu Essentials). A proactive leader dedicated to automating system processes via Python/Bash, reducing infrastructure downtime, and enforcing hardened disaster recovery strategies.
+
+
+linkedin : https://www.linkedin.com/in/omar-gablx01/
+
+GitHUB : https://github.com/omargablx01/omargablx01
+
+Hackrrank : https://www.hackerrank.com/profile/0agx01
+
+exper 1:
+Senior IT Specialist
+Abd El Aziz Elsallab Company
+New Cairo
+https://azizsallab.com/
+
+
+Certif 1 :
+Ubuntu Linux Essentials
+Mahara-Tech ( ITI )
+https://drive.google.com/file/d/1wskVVBVm4cthjKESAdh_fNU4guThE1c5/view
