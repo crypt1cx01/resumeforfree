@@ -34,7 +34,7 @@ PDFs are generated client-side using [Typst.ts](https://github.com/Myriad-Dreami
 ## Local development
 
 ```bash
-git clone https://github.com/imkonsowa/resume-builder.git
+git clone https://github.com/crypt1cx01/resumeforfree.git
 cd resume-builder
 npm install
 npm run dev
